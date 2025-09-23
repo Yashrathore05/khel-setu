@@ -4,6 +4,11 @@ import Badge from '../components/Badge';
 import { useDashboardData } from '../hooks/useDashboardData';
 import { Trophy, Clock, TrendingUp, User } from 'lucide-react';
 import { LineChart, Line, ResponsiveContainer } from 'recharts';
+import { useQuery } from '@tanstack/react-query';
+import TestProgressService from '../services/testProgressService';
+import Avatar from '../components/Avatar';
+import { Link } from 'react-router-dom';
+import Skeleton from '../components/Skeleton';
 
 export default function HomePage() {
   const { t } = useTranslation();
@@ -29,64 +34,98 @@ export default function HomePage() {
     { label: t('improvement'), value: improvementValue, icon: <TrendingUp size={20} className="text-green-400" />, suffix: '%', sparkline: sparklineData(improvementValue) },
   ];
 
+  const isLoadingDashboard = profile.isLoading || progress.isLoading || testProgress.isLoading;
+
   return (
-    <div className="grid gap-6 lg:grid-cols-3">
+    <div className="grid gap-5 sm:gap-6 lg:grid-cols-3">
       {/* Welcome & Progress */}
-      <Card className="lg:col-span-2 p-6 bg-black/40 rounded-2xl shadow-2xl backdrop-blur-sm hover:scale-[1.01] transition-transform">
-        <div className="flex items-center justify-between">
-          <div>
-            <h2 className="text-xl font-bold">{`${t('welcomeBack')} ${profile.data?.name || ''}`}</h2>
-            <p className="text-gray-400 mt-1">{t('progressTracking')}</p>
-          </div>
-          <User size={40} className="text-gray-300" />
-        </div>
-
-        <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {progressItems.map((item) => (
-            <div key={item.label} className="p-5 bg-gray-900/50 rounded-xl shadow-inner flex flex-col items-center w-full">
-              {item.icon}
-              <p className="text-gray-400 text-sm mt-2">{item.label}</p>
-              <p className="text-3xl font-bold mt-1">{item.value}{item.suffix || ''}</p>
-
-              {/* Progress bar */}
-              <div className="w-full h-2 bg-gray-800 rounded-full mt-3">
-                <div
-                  className="h-2 rounded-full bg-gradient-to-r from-green-400 to-blue-500 transition-all"
-                  style={{ width: `${Math.min(Number(item.value) || 0, 100)}%` }}
-                />
+      <Link to="/progress" className="lg:col-span-2 group block">
+        <Card className="p-6 bg-black/40 rounded-2xl shadow-2xl backdrop-blur-sm group-hover:scale-[1.01] transition-transform">
+          {isLoadingDashboard ? (
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <Skeleton className="h-6 w-40" />
+                  <Skeleton className="h-4 w-56 mt-2" />
+                </div>
+                <Skeleton className="h-10 w-10 rounded-full" />
               </div>
-
-              {/* Sparkline chart */}
-              <div className="w-full mt-3 h-12">
-                <ResponsiveContainer width="100%" height="100%">
-                  <LineChart data={item.sparkline}>
-                    <Line type="monotone" dataKey="value" stroke="url(#grad)" strokeWidth={2} dot={false} />
-                    <defs>
-                      <linearGradient id="grad" x1="0" y1="0" x2="1" y2="0">
-                        <stop offset="0%" stopColor="#34d399" />
-                        <stop offset="100%" stopColor="#3b82f6" />
-                      </linearGradient>
-                    </defs>
-                  </LineChart>
-                </ResponsiveContainer>
+              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                <Skeleton className="h-24" />
+                <Skeleton className="h-24" />
+                <Skeleton className="h-24" />
               </div>
             </div>
-          ))}
-        </div>
-      </Card>
+          ) : (
+            <>
+              <div className="flex items-center justify-between">
+                <div>
+                  <h2 className="text-xl font-bold">{`${t('welcomeBack')} ${profile.data?.name || ''}`}</h2>
+                  <p className="text-gray-400 mt-1">{t('progressTracking')}</p>
+                </div>
+                <User size={40} className="text-gray-300" />
+              </div>
+
+              <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                {progressItems.map((item) => (
+                  <div key={item.label} className="p-5 bg-gray-900/50 rounded-xl shadow-inner flex flex-col items-center w-full">
+                    {item.icon}
+                    <p className="text-gray-400 text-sm mt-2">{item.label}</p>
+                    <p className="text-3xl font-bold mt-1">{item.value}{item.suffix || ''}</p>
+
+                    {/* Progress bar */}
+                    <div className="w-full h-2 bg-gray-800 rounded-full mt-3">
+                      <div
+                        className="h-2 rounded-full bg-gradient-to-r from-green-400 to-blue-500 transition-all"
+                        style={{ width: `${Math.min(Number(item.value) || 0, 100)}%` }}
+                      />
+                    </div>
+
+                    {/* Sparkline chart */}
+                    <div className="w-full mt-3 h-12">
+                      <ResponsiveContainer width="100%" height="100%">
+                        <LineChart data={item.sparkline}>
+                          <Line type="monotone" dataKey="value" stroke="url(#grad)" strokeWidth={2} dot={false} />
+                          <defs>
+                            <linearGradient id="grad" x1="0" y1="0" x2="1" y2="0">
+                              <stop offset="0%" stopColor="#34d399" />
+                              <stop offset="100%" stopColor="#3b82f6" />
+                            </linearGradient>
+                          </defs>
+                        </LineChart>
+                      </ResponsiveContainer>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </>
+          )}
+        </Card>
+      </Link>
 
       {/* Profile */}
       <Card className="p-6 bg-black/40 rounded-2xl shadow-2xl hover:scale-[1.01] transition-transform">
         <h3 className="text-lg font-semibold mb-4">{t('profile')}</h3>
-        <div className="space-y-3 text-gray-300 text-sm">
-          <p><span className="text-gray-500">{t('name')}:</span> {profile.data?.name ?? '-'}</p>
-          <p><span className="text-gray-500">{t('email')}:</span> {profile.data?.email ?? '-'}</p>
-          <p><span className="text-gray-500">{t('level')}:</span> {profile.data?.level ?? '-'}</p>
-        </div>
+        {profile.isLoading ? (
+          <div className="space-y-3">
+            <Skeleton className="h-4 w-40" />
+            <Skeleton className="h-4 w-56" />
+            <Skeleton className="h-4 w-24" />
+          </div>
+        ) : (
+          <div className="space-y-3 text-gray-300 text-sm">
+            <p><span className="text-gray-500">{t('name')}:</span> {profile.data?.name ?? '-'}</p>
+            <p><span className="text-gray-500">{t('email')}:</span> {profile.data?.email ?? '-'}</p>
+            <p><span className="text-gray-500">{t('level')}:</span> {profile.data?.level ?? '-'}</p>
+          </div>
+        )}
       </Card>
 
+      {/* Leaderboard (Preview) */}
+      <LeaderboardPreviewCard />
+
       {/* Pending Tests */}
-      <Card className="lg:col-span-2 p-6 bg-black/40 rounded-2xl shadow-2xl hover:scale-[1.01] transition-transform">
+      <Card className="lg:col-span-2 p-6 bg-black/40 rounded-2xl shadow-2xl hover:scale-[1.01] transition-transform overflow-x-auto">
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-lg font-semibold">{t('pendingTests')}</h3>
           <span className="text-sm text-gray-400">{pendingCount}/{totalTests}</span>
@@ -133,5 +172,54 @@ export default function HomePage() {
         </div>
       </Card>
     </div>
+  );
+}
+
+function LeaderboardPreviewCard() {
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ['leaderboard', { limit: 5 }],
+    queryFn: () => TestProgressService.getLeaderboardFromResults(5, {} as any)
+  });
+
+  return (
+    <Card className="p-6 bg-black/40 rounded-2xl shadow-2xl hover:scale-[1.01] transition-transform">
+      <div className="flex items-center justify-between mb-4">
+        <h3 className="text-lg font-semibold">Leaderboard</h3>
+        <Link to="/leaderboard" className="text-sm text-blue-400 hover:underline">View all</Link>
+      </div>
+      {isLoading && (
+        <div className="space-y-3">
+          <div className="h-4 bg-white/5 rounded" />
+          <div className="h-4 bg-white/5 rounded" />
+          <div className="h-4 bg-white/5 rounded" />
+        </div>
+      )}
+      {isError && (
+        <div className="text-sm text-red-400">Failed to load leaderboard.</div>
+      )}
+      {!isLoading && !isError && (
+        <div className="divide-y divide-white/10">
+          {(data && data.length > 0 ? data : []).map((row: any, idx: number) => (
+            <div key={row.userId} className="py-3 flex items-center justify-between gap-3">
+              <div className="flex items-center gap-3 min-w-0">
+                <div className="w-6 text-gray-400 shrink-0">{idx + 1}</div>
+                <Avatar name={row.profile?.name || 'Anonymous'} src={row.profile?.avatar} size={32} />
+                <div className="min-w-0">
+                  <div className="font-semibold truncate max-w-[200px]">{row.profile?.name || 'Anonymous'}</div>
+                  <div className="text-xs text-gray-500 truncate max-w-[200px]">{row.profile?.region || '—'}</div>
+                </div>
+              </div>
+              <div className="text-right">
+                <div className="text-sm font-semibold text-emerald-400">{Math.round(row.overallProgress)}%</div>
+                <div className="text-[11px] text-gray-500">{row.completedTests}/{row.totalTests}</div>
+              </div>
+            </div>
+          ))}
+          {(!data || data.length === 0) && (
+            <div className="py-4 text-sm text-gray-400">No leaderboard data yet.</div>
+          )}
+        </div>
+      )}
+    </Card>
   );
 }

@@ -3,6 +3,7 @@ import TestProgressService from '../services/testProgressService';
 import { useAuth } from '../contexts/AuthContext';
 import { useQuery } from '@tanstack/react-query';
 import Card from '../components/Card';
+import Skeleton from '../components/Skeleton';
 import FitnessRegistrationForm from '../components/FitnessRegistrationForm';
 import { doc, getDoc } from 'firebase/firestore';
 import { db } from '../lib/firestore';
@@ -52,13 +53,23 @@ export default function FitnessTestPage() {
         );
     }
 
+    if (summary.isLoading) {
+        return (
+            <div className="grid gap-3 sm:gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                <Skeleton className="h-28" />
+                <Skeleton className="h-28" />
+                <Skeleton className="h-28" />
+            </div>
+        );
+    }
+
     return (
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-3 sm:gap-4 sm:grid-cols-2 lg:grid-cols-3">
 			{ALL_TESTS.map((t) => {
 				const s = summary.data?.find(x => x.testId === t.testId);
 				return (
 					<Card key={t.testId}>
-						<div className="flex items-start justify-between gap-3">
+                        <div className="flex items-start justify-between gap-2 sm:gap-3">
 							<div>
 								<p className="font-medium">{t.testName}</p>
 								<p className="text-xs text-gray-500">{s?.qualityTested || ''}</p>
@@ -66,9 +77,9 @@ export default function FitnessTestPage() {
 							<StatusBadge status={s?.status} />
 						</div>
                         {s?.status === 'completed' ? (
-                            <span className="mt-3 inline-block rounded bg-green-600/20 text-green-400 px-3 py-1.5 text-sm">Completed</span>
+                            <span className="mt-3 inline-block rounded bg-green-600/20 text-green-400 px-3 py-1.5 text-xs sm:text-sm">Completed</span>
                         ) : (
-                            <Link to={`/fitness-test/${t.testId}`} className="mt-3 inline-block rounded bg-black px-3 py-1.5 text-sm text-white">Start</Link>
+                            <Link to={`/fitness-test/${t.testId}`} className="mt-3 inline-block rounded bg-black px-3 py-2 text-xs sm:text-sm text-white">Start</Link>
                         )}
 					</Card>
 				);

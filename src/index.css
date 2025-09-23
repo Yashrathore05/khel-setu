@@ -30,5 +30,25 @@ body {
 /* Smooth interactions */
 * { transition: color 150ms ease, background-color 150ms ease, border-color 150ms ease, box-shadow 150ms ease; }
 
+/* Respect reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; animation: none !important; }
+}
+
+/* Modern scrollbars */
+*::-webkit-scrollbar { height: 10px; width: 10px; }
+*::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 999px; }
+*::-webkit-scrollbar-track { background: transparent; }
+
+/* Edge-to-edge mobile tap highlights */
+* { -webkit-tap-highlight-color: transparent; }
+
+/* Page fade transition */
+@keyframes pageFade {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.page-fade { animation: pageFade 250ms ease both; }
+
 /* Focus ring */
 :focus-visible { outline: none; box-shadow: 0 0 0 3px rgb(var(--accent) / 0.35); border-radius: 6px; }

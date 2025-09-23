@@ -28,7 +28,7 @@ export default function ProfilePage() {
 	});
 
 	return (
-		<div className="grid gap-6 lg:grid-cols-3">
+		<div className="grid gap-4 sm:gap-6 lg:grid-cols-3">
 			<Card className="lg:col-span-1" title="Account">
 				<div className="flex items-center gap-3">
 					<Avatar name={profile.data?.name || user?.email || ''} size={56} />

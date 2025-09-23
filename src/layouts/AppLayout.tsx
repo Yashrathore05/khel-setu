@@ -57,7 +57,7 @@ export default function AppLayout({ children }: PropsWithChildren) {
     <div className="min-h-screen bg-gradient-to-br from-gray-950 via-gray-900 to-black text-gray-100">
       {/* HEADER */}
       <header className="sticky top-0 z-50 backdrop-blur-md bg-black/40 border-b border-white/10">
-        <div className="mx-auto max-w-6xl px-4 py-3 flex items-center justify-between">
+        <div className="mx-auto max-w-6xl px-3 sm:px-4 py-2.5 sm:py-3 flex items-center justify-between gap-2">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-3">
             <img src="/images/logo.png" alt="Khel Setu" className="h-8 w-auto" />
@@ -67,7 +67,7 @@ export default function AppLayout({ children }: PropsWithChildren) {
           </Link>
 
           {/* NAVIGATION */}
-          <nav className="hidden md:flex items-center gap-2 text-sm">
+          <nav className="hidden md:flex items-center gap-1.5 lg:gap-2 text-sm">
             <NavLink to="/" end className={({ isActive }) => navClasses(isActive)}>
               Home
             </NavLink>
@@ -77,8 +77,14 @@ export default function AppLayout({ children }: PropsWithChildren) {
             <NavLink to="/fitness-test" className={({ isActive }) => navClasses(isActive)}>
               Fitness Test
             </NavLink>
+            <NavLink to="/progress" className={({ isActive }) => navClasses(isActive)}>
+              Progress
+            </NavLink>
             <NavLink to="/events" className={({ isActive }) => navClasses(isActive)}>
               Events
+            </NavLink>
+            <NavLink to="/leaderboard" className={({ isActive }) => navClasses(isActive)}>
+              Leaderboard
             </NavLink>
             <NavLink to="/profile" className={({ isActive }) => navClasses(isActive)}>
               Profile
@@ -86,7 +92,7 @@ export default function AppLayout({ children }: PropsWithChildren) {
           </nav>
 
           {/* ACTIONS */}
-          <div className="flex items-center gap-3 relative">
+          <div className="flex items-center gap-2 sm:gap-3 relative">
             {/* Mobile hamburger */}
             <button
               className="md:hidden inline-flex items-center justify-center h-9 w-9 rounded-lg hover:bg-white/10"
@@ -100,7 +106,7 @@ export default function AppLayout({ children }: PropsWithChildren) {
               </svg>
             </button>
             {/* LANGUAGE DROPDOWN */}
-            <div className="relative">
+            <div className="relative hidden xs:block">
               <button
                 onClick={() => setLangOpen((prev) => !prev)}
                 className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-white/10 transition text-gray-300"
@@ -143,7 +149,7 @@ export default function AppLayout({ children }: PropsWithChildren) {
             ) : (
               <Link
                 to="/login"
-                className="rounded-lg px-4 py-2 border border-white/20 hover:bg-white/10 transition"
+                className="rounded-lg px-3 sm:px-4 py-2 border border-white/20 hover:bg-white/10 transition text-sm"
               >
                 Login
               </Link>
@@ -153,7 +159,7 @@ export default function AppLayout({ children }: PropsWithChildren) {
         {/* Mobile nav panel */}
         {mobileNavOpen && (
           <div className="md:hidden border-t border-white/10 bg-black/80 backdrop-blur supports-[backdrop-filter]:bg-black/60">
-            <div className="px-4 py-3 grid gap-2 text-sm">
+            <div className="px-3 py-3 grid gap-1.5 text-sm">
               <NavLink onClick={() => setMobileNavOpen(false)} to="/" end className={({ isActive }) => navClasses(isActive)}>
                 Home
               </NavLink>
@@ -163,8 +169,14 @@ export default function AppLayout({ children }: PropsWithChildren) {
               <NavLink onClick={() => setMobileNavOpen(false)} to="/fitness-test" className={({ isActive }) => navClasses(isActive)}>
                 Fitness Test
               </NavLink>
+              <NavLink onClick={() => setMobileNavOpen(false)} to="/progress" className={({ isActive }) => navClasses(isActive)}>
+                Progress
+              </NavLink>
               <NavLink onClick={() => setMobileNavOpen(false)} to="/events" className={({ isActive }) => navClasses(isActive)}>
                 Events
+              </NavLink>
+              <NavLink onClick={() => setMobileNavOpen(false)} to="/leaderboard" className={({ isActive }) => navClasses(isActive)}>
+                Leaderboard
               </NavLink>
               <NavLink onClick={() => setMobileNavOpen(false)} to="/profile" className={({ isActive }) => navClasses(isActive)}>
                 Profile
@@ -175,7 +187,7 @@ export default function AppLayout({ children }: PropsWithChildren) {
       </header>
 
       {/* MAIN CONTENT */}
-      <main className="mx-auto max-w-6xl px-4 py-6 sm:py-8">{children}</main>
+      <main className="mx-auto max-w-6xl px-4 py-6 sm:py-8 page-fade">{children}</main>
 
       {/* FOOTER */}
       <footer className="mt-8 border-t border-white/10 bg-black/40 backdrop-blur-sm">

@@ -11,6 +11,8 @@ import EventsPage from './pages/events';
 import ProfilePage from './pages/profile';
 import LoginPage from './pages/login';
 import SignupPage from './pages/signup';
+import LeaderboardPage from './pages/leaderboard';
+import ProgressPage from './pages/progress';
 import './i18n';
 import { AuthProvider } from './contexts/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -61,6 +63,8 @@ function AppInner() {
                         <Route path="/fitness-test" element={<ProtectedRoute><FitnessTestPage /></ProtectedRoute>} />
                         <Route path="/fitness-test/:id" element={<ProtectedRoute><FitnessTestDetailPage /></ProtectedRoute>} />
                         <Route path="/events" element={<ProtectedRoute><EventsPage /></ProtectedRoute>} />
+                        <Route path="/leaderboard" element={<ProtectedRoute><LeaderboardPage /></ProtectedRoute>} />
+                        <Route path="/progress" element={<ProtectedRoute><ProgressPage /></ProtectedRoute>} />
                         <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
                     </Routes>
                 </AppLayout>

@@ -26,7 +26,7 @@ export default function SignupPage() {
 	}
 
 	return (
-		<div className="mx-auto max-w-md">
+		<div className="mx-auto max-w-md px-3 sm:px-0">
 			<h1 className="mb-4 text-2xl font-semibold">Create account</h1>
 			<form onSubmit={onSubmit} className="space-y-3">
 				<label className="block">

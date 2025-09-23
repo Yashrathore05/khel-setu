@@ -1,4 +1,4 @@
-import { collection, doc, getDocs, query, setDoc, where, serverTimestamp } from 'firebase/firestore';
+import { collection, doc, getDocs, getDoc, query, setDoc, where, serverTimestamp } from 'firebase/firestore';
 import { db } from '../lib/firestore';
 
 interface TestResult {
@@ -105,6 +105,69 @@ class TestProgressService {
     async markTestAsIncomplete(userId: string, testId: string, reason: string): Promise<void> {
         const testDocRef = doc(db, 'fitnessTestResults', `${userId}_${testId}`);
         await setDoc(testDocRef, { testId, userId, status: 'incomplete', incompleteReason: reason, completedAt: serverTimestamp() }, { merge: true });
+    }
+
+    async getLeaderboardFromResults(limitUsers: number = 50, filters?: {
+        gender?: 'Male' | 'Female' | 'Other';
+        level?: 'Beginner' | 'Intermediate' | 'Advanced';
+        region?: string;
+        minAge?: number;
+        maxAge?: number;
+    }): Promise<Array<{
+        userId: string;
+        completedTests: number;
+        totalTests: number;
+        overallProgress: number;
+        profile: { id: string; name?: string; region?: string; avatar?: string; age?: number; gender?: 'Male'|'Female'|'Other'; level?: 'Beginner'|'Intermediate'|'Advanced' } | null;
+    }>> {
+        // Fetch all completed fitness test results; aggregate per user
+        // Note: Without Firestore server-side aggregation, this is client-side.
+        const resultsRef = collection(db, 'fitnessTestResults');
+        const qRef = query(resultsRef, where('status', '==', 'completed'));
+        const qs = await getDocs(qRef);
+        const byUser: Record<string, { completed: number }> = {};
+        qs.forEach((docSnap) => {
+            const data = docSnap.data() as any;
+            const uid = data.userId;
+            if (!uid) return;
+            if (!byUser[uid]) byUser[uid] = { completed: 0 };
+            byUser[uid].completed += 1;
+        });
+
+        const totalTests = 10; // keep consistent with getTestProgress
+        const rows = Object.entries(byUser).map(([userId, agg]) => ({
+            userId,
+            completedTests: agg.completed,
+            totalTests,
+            overallProgress: (agg.completed / totalTests) * 100,
+        }));
+
+        // Join with user profiles
+        const joined = [] as Array<any>;
+        for (let i = 0; i < rows.length; i++) {
+            const userRef = doc(db, 'users', rows[i].userId);
+            const snap = await getDoc(userRef);
+            joined.push({
+                ...rows[i],
+                profile: snap.exists() ? ({ id: snap.id, ...(snap.data() as any) }) : null,
+            });
+        }
+
+        // Apply filters
+        const filtered = (filters ? joined.filter(r => {
+            const p: any = (r as any).profile;
+            if (!p) return false;
+            if (filters.gender && p.gender !== filters.gender) return false;
+            if (filters.level && p.level !== filters.level) return false;
+            if (filters.region && (p.region || '').toLowerCase() !== filters.region.toLowerCase()) return false;
+            if (typeof filters.minAge === 'number' && (p.age ?? -Infinity) < filters.minAge) return false;
+            if (typeof filters.maxAge === 'number' && (p.age ?? Infinity) > filters.maxAge) return false;
+            return true;
+        }) : joined) as any[];
+
+        // Sort by progress desc, then limit
+        filtered.sort((a, b) => b.overallProgress - a.overallProgress);
+        return filtered.slice(0, limitUsers) as any;
     }
 }
 

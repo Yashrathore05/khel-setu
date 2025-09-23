@@ -47,13 +47,13 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-950 via-gray-900 to-black px-4">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-950 via-gray-900 to-black px-3 sm:px-4">
       {/* Glow Effects */}
       <div className="absolute top-0 left-0 w-72 h-72 bg-purple-600/20 blur-[140px] rounded-full -z-10" />
       <div className="absolute bottom-0 right-0 w-72 h-72 bg-indigo-600/20 blur-[140px] rounded-full -z-10" />
 
       <div className="w-full max-w-md">
-        <Card className="backdrop-blur-md bg-white/5 border border-white/10 shadow-xl rounded-2xl p-8">
+        <Card className="backdrop-blur-md bg-white/5 border border-white/10 shadow-xl rounded-2xl p-6 sm:p-8">
           <div className="flex flex-col items-center text-center gap-3 mb-6">
             <img
               src="/images/logo.png"

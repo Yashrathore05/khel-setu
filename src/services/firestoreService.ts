@@ -129,6 +129,51 @@ export const progressService = {
 		const ref = doc(db, 'progress', userId);
 		await updateDoc(ref, { ...data, lastUpdated: Timestamp.now() });
 	},
+	async getLeaderboard(limitCount: number = 50, filters?: {
+		gender?: UserProfile['gender'];
+		level?: UserProfile['level'];
+		region?: string;
+		minAge?: number;
+		maxAge?: number;
+	}): Promise<Array<{
+		userId: string;
+		overallScore: number;
+		benchmark: number;
+		improvement: number;
+		profile: UserProfile | null;
+	}>> {
+		// Fetch top progress docs ordered by overallScore desc
+		const qRef = query(collection(db, 'progress'), orderBy('overallScore', 'desc'), limit(limitCount));
+		const qs = await getDocs(qRef);
+		const items = qs.docs.map(d => ({ userId: d.id, ...(d.data() as any) })) as Array<{
+			userId: string; overallScore: number; benchmark: number; improvement: number;
+		}>;
+		// Parallel fetch corresponding user profiles
+		const profiles = await Promise.all(items.map(async (it) => {
+			const ref = doc(db, 'users', it.userId);
+			const snap = await getDoc(ref);
+			return snap.exists() ? ({ id: snap.id, ...snap.data() } as UserProfile) : null;
+		}));
+		const rows = items.map((it, idx) => ({
+			userId: it.userId,
+			overallScore: it.overallScore,
+			benchmark: it.benchmark,
+			improvement: it.improvement,
+			profile: profiles[idx] ?? null,
+		}));
+		// Apply client-side filters using joined profile fields
+		if (!filters) return rows;
+		return rows.filter(r => {
+			const p = r.profile;
+			if (!p) return false;
+			if (filters.gender && p.gender !== filters.gender) return false;
+			if (filters.level && p.level !== filters.level) return false;
+			if (filters.region && p.region?.toLowerCase() !== filters.region.toLowerCase()) return false;
+			if (typeof filters.minAge === 'number' && p.age < filters.minAge) return false;
+			if (typeof filters.maxAge === 'number' && p.age > filters.maxAge) return false;
+			return true;
+		});
+	}
 };
 
 export const eventsService = {

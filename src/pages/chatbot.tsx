@@ -33,7 +33,7 @@ export default function ChatbotPage() {
     }
 
     return (
-        <div className="max-w-3xl mx-auto">
+        <div className="max-w-3xl mx-auto px-3 sm:px-0">
             <div className="rounded-3xl overflow-hidden border border-white/10 bg-gradient-to-b from-blue-950/60 via-black/40 to-black/60 shadow-2xl backdrop-blur-md">
                 <div className="relative p-5 sm:p-6 border-b border-white/10 bg-gradient-to-r from-blue-600/20 via-purple-500/20 to-fuchsia-500/20">
                     <div className="flex items-center gap-3">
@@ -47,7 +47,7 @@ export default function ChatbotPage() {
                     </div>
                 </div>
 
-                <div ref={scrollRef} className="h-[480px] overflow-y-auto p-4 sm:p-5 space-y-4 bg-gradient-to-b from-transparent to-black/20">
+                <div ref={scrollRef} className="h-[65vh] min-h-[360px] overflow-y-auto p-3 sm:p-5 space-y-4 bg-gradient-to-b from-transparent to-black/20">
                 {messages.map((m, idx) => (
                         <div key={idx} className={`flex items-start gap-3 ${m.role === 'assistant' ? '' : 'justify-end'}`}>
                             {m.role === 'assistant' && (
@@ -55,13 +55,13 @@ export default function ChatbotPage() {
                                     <span className="text-sm">🤖</span>
                                 </div>
                             )}
-                            <div className={`max-w-[78%] rounded-2xl px-4 py-3 shadow-lg ${m.role === 'assistant' ? 'bg-white/5 border border-white/10' : 'bg-blue-600/20 border border-blue-500/30'} `}>
-                                <p className="whitespace-pre-wrap leading-relaxed text-sm sm:text-[15px]">{m.content}</p>
+                            <div className={`max-w-[82%] sm:max-w-[78%] rounded-2xl px-3 sm:px-4 py-2.5 sm:py-3 shadow-lg ${m.role === 'assistant' ? 'bg-white/5 border border-white/10' : 'bg-blue-600/20 border border-blue-500/30'} `}>
+                                <p className="whitespace-pre-wrap leading-relaxed text-[13px] sm:text-[15px]">{m.content}</p>
                             </div>
                             {m.role === 'user' && (
                                 <div className="h-8 w-8 shrink-0 rounded-xl bg-blue-600/30 border border-blue-400/30 flex items-center justify-center shadow">
-                                    <span className="text-sm">🧑‍🦽</span>
-                        </div>
+                                    <span className="text-sm">👤</span>
+                                </div>
                             )}
                     </div>
                 ))}
@@ -75,8 +75,8 @@ export default function ChatbotPage() {
 
                 {error && <p className="px-5 pt-3 text-sm text-red-400">{error}</p>}
 
-                <div className="p-4 sm:p-5">
-                    <div className="flex items-center gap-2 sm:gap-3 rounded-2xl bg-black/40 border border-white/10 px-3 sm:px-4 py-2.5 shadow-inner">
+                <div className="p-3 sm:p-5">
+                    <div className="flex items-center gap-2 sm:gap-3 rounded-2xl bg-black/40 border border-white/10 px-2.5 sm:px-4 py-2 shadow-inner">
                         <button className="hidden sm:inline-flex h-9 w-9 items-center justify-center rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-sm">+
                         </button>
                 <input

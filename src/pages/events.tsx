@@ -2,6 +2,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { eventsService } from '../services/firestoreService';
 import { useAuth } from '../contexts/AuthContext';
 import Card from '../components/Card';
+import Skeleton from '../components/Skeleton';
 
 function formatDate(ts: any) {
 	try {
@@ -24,7 +25,14 @@ export default function EventsPage() {
 	return (
 		<div>
 			<h2 className="mb-3 text-lg font-semibold">Upcoming Events</h2>
-			<div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+			{events.isLoading ? (
+				<div className="grid gap-3 sm:gap-4 sm:grid-cols-2 lg:grid-cols-3">
+					<Skeleton className="h-28" />
+					<Skeleton className="h-28" />
+					<Skeleton className="h-28" />
+				</div>
+			) : (
+			<div className="grid gap-3 sm:gap-4 sm:grid-cols-2 lg:grid-cols-3">
 				{events.data?.length ? events.data.map((e) => {
 					const isFull = e.currentParticipants >= e.maxParticipants;
 					return (
@@ -36,11 +44,12 @@ export default function EventsPage() {
 								</div>
 								<div className="text-xs text-gray-500">{e.currentParticipants}/{e.maxParticipants}</div>
 							</div>
-							<button onClick={() => register.mutate(e.id)} disabled={!user || register.isPending || isFull} className="mt-3 w-full rounded bg-black px-3 py-1.5 text-white disabled:opacity-50">{isFull ? 'Full' : register.isPending ? 'Registering...' : 'Register'}</button>
+					<button onClick={() => register.mutate(e.id)} disabled={!user || register.isPending || isFull} className="mt-3 w-full rounded bg-black px-3 py-2 text-sm text-white disabled:opacity-50">{isFull ? 'Full' : register.isPending ? 'Registering...' : 'Register'}</button>
 						</Card>
 					);
 				}) : <p className="text-sm text-gray-500">No upcoming events</p>}
 			</div>
+			)}
 		</div>
 	);
 }
