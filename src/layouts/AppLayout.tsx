@@ -53,15 +53,6 @@ export default function AppLayout({ children }: PropsWithChildren) {
     changeLanguage(code);
   };
 
-  // Lock body scroll when mobile nav open
-  useEffect(() => {
-    if (mobileNavOpen) {
-      const prev = document.body.style.overflow;
-      document.body.style.overflow = "hidden";
-      return () => { document.body.style.overflow = prev; };
-    }
-  }, [mobileNavOpen]);
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-950 via-gray-900 to-black text-gray-100">
       {/* HEADER */}
@@ -98,11 +89,11 @@ export default function AppLayout({ children }: PropsWithChildren) {
           <div className="flex items-center gap-3 relative">
             {/* Mobile hamburger */}
             <button
-              className="md:hidden inline-flex items-center justify-center h-10 w-10 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 shadow"
+              className="md:hidden inline-flex items-center justify-center h-9 w-9 rounded-lg hover:bg-white/10"
               onClick={() => setMobileNavOpen((v) => !v)}
               aria-label="Open menu"
             >
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-200">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-200">
                 <line x1="3" y1="6" x2="21" y2="6"></line>
                 <line x1="3" y1="12" x2="21" y2="12"></line>
                 <line x1="3" y1="18" x2="21" y2="18"></line>
@@ -135,9 +126,11 @@ export default function AppLayout({ children }: PropsWithChildren) {
               )}
             </div>
 
+            {/* DARK MODE TOGGLE REMOVED */}
+
             {/* USER AUTH */}
             {user ? (
-              <div className="hidden sm:flex items-center gap-3">
+              <div className="flex items-center gap-3">
                 <Avatar name={user.displayName || user.email || "User"} size={36} />
                 <Button
                   onClick={logout}
@@ -150,52 +143,32 @@ export default function AppLayout({ children }: PropsWithChildren) {
             ) : (
               <Link
                 to="/login"
-                className="hidden sm:inline-block rounded-lg px-4 py-2 border border-white/20 hover:bg-white/10 transition"
+                className="rounded-lg px-4 py-2 border border-white/20 hover:bg-white/10 transition"
               >
                 Login
               </Link>
             )}
           </div>
         </div>
-        {/* Mobile full-screen overlay menu */}
+        {/* Mobile nav panel */}
         {mobileNavOpen && (
-          <div className="fixed inset-0 z-40 md:hidden">
-            <div className="absolute inset-0 bg-black/60 backdrop-blur" onClick={() => setMobileNavOpen(false)} />
-            <div className="absolute inset-x-0 top-0 mt-14 px-4">
-              <div className="rounded-2xl border border-white/10 bg-gradient-to-b from-white/10 to-white/5 shadow-2xl">
-                <div className="p-3">
-                  <div className="flex items-center justify-between px-1 py-2">
-                    <div className="flex items-center gap-2">
-                      <img src="/images/logo.png" alt="Khel Setu" className="h-6 w-6" />
-                      <span className="text-sm font-semibold">Khel Setu</span>
-                    </div>
-                    <button
-                      onClick={() => setMobileNavOpen(false)}
-                      className="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-white/5 hover:bg-white/10 border border-white/10"
-                      aria-label="Close menu"
-                    >
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-200">
-                        <line x1="18" y1="6" x2="6" y2="18"></line>
-                        <line x1="6" y1="6" x2="18" y2="18"></line>
-                      </svg>
-                    </button>
-                  </div>
-                  <div className="grid gap-2 py-2">
-                    <NavLink onClick={() => setMobileNavOpen(false)} to="/" end className={({ isActive }) => `${isActive ? 'bg-white/10 text-white' : 'text-gray-300 hover:bg-white/5'} rounded-xl px-4 py-3 text-base`}>Home</NavLink>
-                    <NavLink onClick={() => setMobileNavOpen(false)} to="/chatbot" className={({ isActive }) => `${isActive ? 'bg-white/10 text-white' : 'text-gray-300 hover:bg-white/5'} rounded-xl px-4 py-3 text-base`}>Chatbot</NavLink>
-                    <NavLink onClick={() => setMobileNavOpen(false)} to="/fitness-test" className={({ isActive }) => `${isActive ? 'bg-white/10 text-white' : 'text-gray-300 hover:bg-white/5'} rounded-xl px-4 py-3 text-base`}>Fitness Test</NavLink>
-                    <NavLink onClick={() => setMobileNavOpen(false)} to="/events" className={({ isActive }) => `${isActive ? 'bg-white/10 text-white' : 'text-gray-300 hover:bg-white/5'} rounded-xl px-4 py-3 text-base`}>Events</NavLink>
-                    <NavLink onClick={() => setMobileNavOpen(false)} to="/profile" className={({ isActive }) => `${isActive ? 'bg-white/10 text-white' : 'text-gray-300 hover:bg-white/5'} rounded-xl px-4 py-3 text-base`}>Profile</NavLink>
-                  </div>
-                  <div className="px-1 pb-3">
-                    {user ? (
-                      <Button onClick={() => { setMobileNavOpen(false); logout(); }} className="w-full rounded-xl bg-red-500/15 hover:bg-red-500/25 text-red-300 border border-red-500/20">Logout</Button>
-                    ) : (
-                      <Link to="/login" onClick={() => setMobileNavOpen(false)} className="block text-center w-full rounded-xl px-4 py-3 border border-white/20 hover:bg-white/10 transition">Login</Link>
-                    )}
-                  </div>
-                </div>
-              </div>
+          <div className="md:hidden border-t border-white/10 bg-black/80 backdrop-blur supports-[backdrop-filter]:bg-black/60">
+            <div className="px-4 py-3 grid gap-2 text-sm">
+              <NavLink onClick={() => setMobileNavOpen(false)} to="/" end className={({ isActive }) => navClasses(isActive)}>
+                Home
+              </NavLink>
+              <NavLink onClick={() => setMobileNavOpen(false)} to="/chatbot" className={({ isActive }) => navClasses(isActive)}>
+                Chatbot
+              </NavLink>
+              <NavLink onClick={() => setMobileNavOpen(false)} to="/fitness-test" className={({ isActive }) => navClasses(isActive)}>
+                Fitness Test
+              </NavLink>
+              <NavLink onClick={() => setMobileNavOpen(false)} to="/events" className={({ isActive }) => navClasses(isActive)}>
+                Events
+              </NavLink>
+              <NavLink onClick={() => setMobileNavOpen(false)} to="/profile" className={({ isActive }) => navClasses(isActive)}>
+                Profile
+              </NavLink>
             </div>
           </div>
         )}
