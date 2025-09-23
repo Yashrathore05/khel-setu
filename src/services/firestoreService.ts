@@ -113,8 +113,8 @@ export const badgesService = {
 		const qs = await getDocs(qRef);
 		return qs.docs.map(d => ({ id: d.id, ...d.data() } as Badge));
 	},
-	async awardBadge(userId: string, badgeId: string): Promise<void> {
-		const ref = doc(db, 'badges', badgeId);
+    async awardBadge(_userId: string, badgeId: string): Promise<void> {
+        const ref = doc(db, 'badges', badgeId);
 		await updateDoc(ref, { earned: true, earnedAt: Timestamp.now() });
 	},
 };
