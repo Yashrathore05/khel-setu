@@ -1,0 +1,26 @@
+{
+  "name": "Khel Setu (Prototype)",
+  "short_name": "Khel Setu",
+  "description": "Prototype for SIH by Team Code Sprinters (DCRUST Murthal) for SAI to support athletes and sports aspirants with guidance, tests, and training insights.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#0b1220",
+  "theme_color": "#0b1220",
+  "icons": [
+    {
+      "src": "/images/logo.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/images/logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}
+
+

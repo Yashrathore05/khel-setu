@@ -1,0 +1,137 @@
+import { useTranslation } from 'react-i18next';
+import Card from '../components/Card';
+import Badge from '../components/Badge';
+import { useDashboardData } from '../hooks/useDashboardData';
+import { Trophy, Clock, TrendingUp, User } from 'lucide-react';
+import { LineChart, Line, ResponsiveContainer } from 'recharts';
+
+export default function HomePage() {
+  const { t } = useTranslation();
+  const { profile, progress, fitnessSummary, badges, testProgress } = useDashboardData();
+  const DEFAULT_TOTAL_TESTS = 10;
+  const totalTests = fitnessSummary.data?.length ?? DEFAULT_TOTAL_TESTS;
+  const completedCount = fitnessSummary.data?.filter((s: any) => s.status === 'completed').length ?? 0;
+  const pendingCount = Math.max(0, totalTests - completedCount);
+
+  // Example sparkline data (replace with real trend data if available)
+  const sparklineData = (value: number | null) => Array.from({ length: 7 }, (_, i) => ({
+    day: i + 1,
+    value: value ? Math.max(0, value - i * 2 + Math.random() * 4) : 0,
+  }));
+
+  const overall = progress.data?.overallScore ?? testProgress.data?.overallProgress ?? 0;
+  const benchmarkValue = progress.data?.benchmark ?? Math.round((testProgress.data?.completedTests ?? 0) / (testProgress.data?.totalTests || DEFAULT_TOTAL_TESTS) * 100);
+  const improvementValue = progress.data?.improvement ?? 0;
+
+  const progressItems = [
+    { label: t('overallScore'), value: overall, icon: <Trophy size={20} className="text-yellow-400" />, suffix: '%', sparkline: sparklineData(overall) },
+    { label: t('benchmark'), value: benchmarkValue, icon: <Clock size={20} className="text-blue-400" />, suffix: '%', sparkline: sparklineData(benchmarkValue) },
+    { label: t('improvement'), value: improvementValue, icon: <TrendingUp size={20} className="text-green-400" />, suffix: '%', sparkline: sparklineData(improvementValue) },
+  ];
+
+  return (
+    <div className="grid gap-6 lg:grid-cols-3">
+      {/* Welcome & Progress */}
+      <Card className="lg:col-span-2 p-6 bg-black/40 rounded-2xl shadow-2xl backdrop-blur-sm hover:scale-[1.01] transition-transform">
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="text-xl font-bold">{`${t('welcomeBack')} ${profile.data?.name || ''}`}</h2>
+            <p className="text-gray-400 mt-1">{t('progressTracking')}</p>
+          </div>
+          <User size={40} className="text-gray-300" />
+        </div>
+
+        <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {progressItems.map((item) => (
+            <div key={item.label} className="p-5 bg-gray-900/50 rounded-xl shadow-inner flex flex-col items-center w-full">
+              {item.icon}
+              <p className="text-gray-400 text-sm mt-2">{item.label}</p>
+              <p className="text-3xl font-bold mt-1">{item.value}{item.suffix || ''}</p>
+
+              {/* Progress bar */}
+              <div className="w-full h-2 bg-gray-800 rounded-full mt-3">
+                <div
+                  className="h-2 rounded-full bg-gradient-to-r from-green-400 to-blue-500 transition-all"
+                  style={{ width: `${Math.min(Number(item.value) || 0, 100)}%` }}
+                />
+              </div>
+
+              {/* Sparkline chart */}
+              <div className="w-full mt-3 h-12">
+                <ResponsiveContainer width="100%" height="100%">
+                  <LineChart data={item.sparkline}>
+                    <Line type="monotone" dataKey="value" stroke="url(#grad)" strokeWidth={2} dot={false} />
+                    <defs>
+                      <linearGradient id="grad" x1="0" y1="0" x2="1" y2="0">
+                        <stop offset="0%" stopColor="#34d399" />
+                        <stop offset="100%" stopColor="#3b82f6" />
+                      </linearGradient>
+                    </defs>
+                  </LineChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
+          ))}
+        </div>
+      </Card>
+
+      {/* Profile */}
+      <Card className="p-6 bg-black/40 rounded-2xl shadow-2xl hover:scale-[1.01] transition-transform">
+        <h3 className="text-lg font-semibold mb-4">{t('profile')}</h3>
+        <div className="space-y-3 text-gray-300 text-sm">
+          <p><span className="text-gray-500">{t('name')}:</span> {profile.data?.name ?? '-'}</p>
+          <p><span className="text-gray-500">{t('email')}:</span> {profile.data?.email ?? '-'}</p>
+          <p><span className="text-gray-500">{t('level')}:</span> {profile.data?.level ?? '-'}</p>
+        </div>
+      </Card>
+
+      {/* Pending Tests */}
+      <Card className="lg:col-span-2 p-6 bg-black/40 rounded-2xl shadow-2xl hover:scale-[1.01] transition-transform">
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-lg font-semibold">{t('pendingTests')}</h3>
+          <span className="text-sm text-gray-400">{pendingCount}/{totalTests}</span>
+        </div>
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {fitnessSummary.data?.filter((s: any) => s.status !== 'completed').slice(0, 6).map((s: any) => (
+            <div key={s.testId} className="p-4 bg-gray-900/50 border border-gray-700 rounded-xl hover:shadow-lg transition flex flex-col justify-between">
+              <p className="font-medium mb-2">{s.testName}</p>
+              <div className="flex items-center justify-between">
+                <p className="text-xs text-gray-400 capitalize">{s.qualityTested || ''}</p>
+                <Badge variant="outline">{t('pending')}</Badge>
+              </div>
+            </div>
+          )) || <p className="text-sm text-gray-500">{t('noData')}</p>}
+        </div>
+      </Card>
+
+      {/* Badges */}
+      <Card className="p-6 bg-black/40 rounded-2xl shadow-2xl hover:scale-[1.01] transition-transform">
+        <h3 className="text-lg font-semibold mb-4">{t('badges')}</h3>
+        <div className="grid grid-cols-2 gap-4">
+          {badges.data?.length ? badges.data.slice(0, 4).map((b) => (
+            <div key={b.id} className="p-3 bg-gradient-to-br from-purple-800 via-pink-900 to-red-900 border border-gray-700 rounded-xl flex flex-col items-start text-white">
+              <p className="font-semibold">{b.name}</p>
+              <p className="text-xs capitalize">{b.category}</p>
+            </div>
+          )) : <p className="text-sm text-gray-500">{t('noData')}</p>}
+        </div>
+      </Card>
+
+      {/* Completed Tests */}
+      <Card className="lg:col-span-3 p-6 bg-black/40 rounded-2xl shadow-2xl hover:scale-[1.01] transition-transform">
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-lg font-semibold">{t('completedTests')}</h3>
+          <span className="text-sm text-gray-400">{completedCount}/{totalTests}</span>
+        </div>
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {fitnessSummary.data?.filter((s: any) => s.status === 'completed').slice(0, 8).map((s: any) => (
+            <div key={s.testId} className="p-4 bg-gray-900/50 border border-gray-700 rounded-xl flex flex-col justify_between">
+              <p className="font-medium mb-1">{s.testName}</p>
+              <p className="text-xs text-gray-400">{s.unit ? `Result: ${s.result ?? '-'} ${s.unit}` : ''}</p>
+            </div>
+          )) || <p className="text-sm text-gray-500">{t('noData')}</p>}
+        </div>
+      </Card>
+    </div>
+  );
+}
