@@ -21,6 +21,7 @@ export default function AppLayout({ children }: PropsWithChildren) {
 
   // Language Dropdown State (Indian regional languages only)
   const [langOpen, setLangOpen] = useState(false);
+  const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const { i18n } = useTranslation();
   const languageOptions = useMemo(
     () => [
@@ -86,6 +87,18 @@ export default function AppLayout({ children }: PropsWithChildren) {
 
           {/* ACTIONS */}
           <div className="flex items-center gap-3 relative">
+            {/* Mobile hamburger */}
+            <button
+              className="md:hidden inline-flex items-center justify-center h-9 w-9 rounded-lg hover:bg-white/10"
+              onClick={() => setMobileNavOpen((v) => !v)}
+              aria-label="Open menu"
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-200">
+                <line x1="3" y1="6" x2="21" y2="6"></line>
+                <line x1="3" y1="12" x2="21" y2="12"></line>
+                <line x1="3" y1="18" x2="21" y2="18"></line>
+              </svg>
+            </button>
             {/* LANGUAGE DROPDOWN */}
             <div className="relative">
               <button
@@ -102,7 +115,7 @@ export default function AppLayout({ children }: PropsWithChildren) {
                     <button
                       key={opt.code}
                       onClick={() => handleLangSelect(opt.code)}
-                      className={`block w-full text-left px-4 py-2 text-sm hover:bg_white/10 ${
+                      className={`block w-full text-left px-4 py-2 text-sm hover:bg-white/10 ${
                         currentLang === opt.label ? "text-white font-semibold" : "text-gray-300"
                       }`}
                     >
@@ -130,20 +143,42 @@ export default function AppLayout({ children }: PropsWithChildren) {
             ) : (
               <Link
                 to="/login"
-                className="rounded-lg px-4 py-2 border border_white/20 hover:bg-white/10 transition"
+                className="rounded-lg px-4 py-2 border border-white/20 hover:bg-white/10 transition"
               >
                 Login
               </Link>
             )}
           </div>
         </div>
+        {/* Mobile nav panel */}
+        {mobileNavOpen && (
+          <div className="md:hidden border-t border-white/10 bg-black/80 backdrop-blur supports-[backdrop-filter]:bg-black/60">
+            <div className="px-4 py-3 grid gap-2 text-sm">
+              <NavLink onClick={() => setMobileNavOpen(false)} to="/" end className={({ isActive }) => navClasses(isActive)}>
+                Home
+              </NavLink>
+              <NavLink onClick={() => setMobileNavOpen(false)} to="/chatbot" className={({ isActive }) => navClasses(isActive)}>
+                Chatbot
+              </NavLink>
+              <NavLink onClick={() => setMobileNavOpen(false)} to="/fitness-test" className={({ isActive }) => navClasses(isActive)}>
+                Fitness Test
+              </NavLink>
+              <NavLink onClick={() => setMobileNavOpen(false)} to="/events" className={({ isActive }) => navClasses(isActive)}>
+                Events
+              </NavLink>
+              <NavLink onClick={() => setMobileNavOpen(false)} to="/profile" className={({ isActive }) => navClasses(isActive)}>
+                Profile
+              </NavLink>
+            </div>
+          </div>
+        )}
       </header>
 
       {/* MAIN CONTENT */}
-      <main className="mx-auto max-w-6xl px-4 py-8">{children}</main>
+      <main className="mx-auto max-w-6xl px-4 py-6 sm:py-8">{children}</main>
 
       {/* FOOTER */}
-      <footer className="border-t border-white/10 bg-black/40 backdrop-blur-sm">
+      <footer className="mt-8 border-t border-white/10 bg-black/40 backdrop-blur-sm">
         <div className="mx-auto max-w-6xl px-4 py-6 text-sm text-gray-400 flex items-center justify-between">
           <span>© {new Date().getFullYear()} Khel Setu</span>
           <span className="hidden sm:inline">Developed by Code Sprinters team</span>
