@@ -25,8 +25,6 @@ export default function FitnessTestDetailPage() {
     const [recording, setRecording] = useState(false);
     const recordTimerRef = useRef<number | null>(null);
     const recordingStartRef = useRef<number | null>(null);
-    // Note: start time kept in ref to avoid stale closures
-    const [recordingStart, setRecordingStart] = useState<number | null>(null);
     const [elapsedSec, setElapsedSec] = useState<number>(0);
     const [error, setError] = useState<string | null>(null);
     const [showViolation, setShowViolation] = useState<boolean>(false);

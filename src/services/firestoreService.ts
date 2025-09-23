@@ -137,7 +137,7 @@ export const eventsService = {
 		const qs = await getDocs(qRef);
 		return qs.docs.map(d => ({ id: d.id, ...d.data() } as Event));
 	},
-	async registerForEvent(eventId: string, userId: string): Promise<void> {
+    async registerForEvent(eventId: string, userId: string): Promise<void> {
 		const eventRef = doc(db, 'events', eventId);
 		const snap = await getDoc(eventRef);
 		if (snap.exists()) {
@@ -146,9 +146,9 @@ export const eventsService = {
 				await updateDoc(eventRef, { currentParticipants: data.currentParticipants + 1 });
 				const participantRef = doc(db, 'eventParticipants', `${eventId}_${userId}`);
 				await setDoc(participantRef, { eventId, userId, registeredAt: Timestamp.now() });
-			} else {
-				throw new Error('Event is full');
-			}
+            } else {
+                throw new Error('Event is full');
+            }
 		}
 	},
 };

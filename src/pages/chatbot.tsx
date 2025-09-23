@@ -48,7 +48,7 @@ export default function ChatbotPage() {
                 </div>
 
                 <div ref={scrollRef} className="h-[480px] overflow-y-auto p-4 sm:p-5 space-y-4 bg-gradient-to-b from-transparent to-black/20">
-                    {messages.map((m, idx) => (
+                {messages.map((m, idx) => (
                         <div key={idx} className={`flex items-start gap-3 ${m.role === 'assistant' ? '' : 'justify-end'}`}>
                             {m.role === 'assistant' && (
                                 <div className="h-8 w-8 shrink-0 rounded-xl bg-white/10 border border-white/15 flex items-center justify-center shadow">
@@ -61,17 +61,17 @@ export default function ChatbotPage() {
                             {m.role === 'user' && (
                                 <div className="h-8 w-8 shrink-0 rounded-xl bg-blue-600/30 border border-blue-400/30 flex items-center justify-center shadow">
                                     <span className="text-sm">🧑‍🦽</span>
-                                </div>
-                            )}
                         </div>
-                    ))}
+                            )}
+                    </div>
+                ))}
                     {loading && (
                         <div className="flex items-center gap-2 text-xs text-gray-400">
                             <span className="inline-flex h-2 w-2 rounded-full bg-gray-400/70 animate-pulse"></span>
                             Thinking...
                         </div>
                     )}
-                </div>
+            </div>
 
                 {error && <p className="px-5 pt-3 text-sm text-red-400">{error}</p>}
 
@@ -79,21 +79,21 @@ export default function ChatbotPage() {
                     <div className="flex items-center gap-2 sm:gap-3 rounded-2xl bg-black/40 border border-white/10 px-3 sm:px-4 py-2.5 shadow-inner">
                         <button className="hidden sm:inline-flex h-9 w-9 items-center justify-center rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-sm">+
                         </button>
-                        <input
-                            value={input}
-                            onChange={(e) => setInput(e.target.value)}
-                            onKeyDown={(e) => { if (e.key === 'Enter') onSend(); }}
+                <input
+                    value={input}
+                    onChange={(e) => setInput(e.target.value)}
+                    onKeyDown={(e) => { if (e.key === 'Enter') onSend(); }}
                             placeholder="Ask about training plans, tests, nutrition, recovery..."
                             className="flex-1 bg-transparent text-sm focus:outline-none placeholder:text-gray-500"
-                        />
-                        <button
-                            onClick={onSend}
-                            disabled={loading}
+                />
+                <button
+                    onClick={onSend}
+                    disabled={loading}
                             className="inline-flex items-center gap-2 rounded-xl bg-blue-600 hover:bg-blue-500 disabled:opacity-60 px-3 sm:px-4 py-2 text-sm font-medium border border-blue-400/30 shadow"
-                        >
+                >
                             <span>Send</span>
-                        </button>
-                    </div>
+                </button>
+            </div>
                     <p className="mt-2 text-[11px] text-gray-500">Tip: Use metric units (cm, m, kg, sec). Train safe and recover well.</p>
                 </div>
             </div>

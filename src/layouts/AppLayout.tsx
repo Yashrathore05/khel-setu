@@ -14,27 +14,7 @@ function navClasses(isActive: boolean) {
     : "px-3 py-2 rounded-lg text-gray-400 hover:text-white hover:bg-white/5 transition";
 }
 
-function useDarkMode() {
-  const [isDark, setIsDark] = useState<boolean>(() =>
-    document.documentElement.classList.contains("dark")
-  );
-  useEffect(() => {
-    const stored = localStorage.getItem("ks-theme");
-    const prefers = window.matchMedia("(prefers-color-scheme: dark)").matches;
-    const enable = stored ? stored === "dark" : prefers;
-    document.documentElement.classList.toggle("dark", enable);
-    setIsDark(enable);
-  }, []);
-  const toggle = () => {
-    setIsDark((prev) => {
-      const next = !prev;
-      document.documentElement.classList.toggle("dark", next);
-      localStorage.setItem("ks-theme", next ? "dark" : "light");
-      return next;
-    });
-  };
-  return { isDark, toggle };
-}
+// Dark mode hook was unused; removing to satisfy noUnusedLocals
 
 export default function AppLayout({ children }: PropsWithChildren) {
   const { user, logout } = useAuth();
