@@ -683,7 +683,6 @@ export default function FitnessTestDetailPage() {
         setRecording(true);
         const start = Date.now();
         recordingStartRef.current = start;
-        setRecordingStart(start);
         setElapsedSec(0);
         if (recordTimerRef.current) window.clearInterval(recordTimerRef.current);
         recordTimerRef.current = window.setInterval(() => {
@@ -716,7 +715,6 @@ export default function FitnessTestDetailPage() {
             recordTimerRef.current = null;
         }
         recordingStartRef.current = null;
-        setRecordingStart(null);
         setElapsedSec(0);
     }
 
