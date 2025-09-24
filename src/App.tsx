@@ -7,6 +7,8 @@ import HomePage from './pages/index';
 import ChatbotPage from './pages/chatbot';
 import FitnessTestPage from './pages/fitness-test';
 import FitnessTestDetailPage from './pages/fitness-test-detail';
+import NormalFitnessTestPage from './pages/normal-fitness-test';
+import NormalFitnessTestDetailPage from './pages/normal-fitness-test-detail';
 import EventsPage from './pages/events';
 import ProfilePage from './pages/profile';
 import LoginPage from './pages/login';
@@ -62,6 +64,8 @@ function AppInner() {
                         <Route path="/chatbot" element={<ProtectedRoute><ChatbotPage /></ProtectedRoute>} />
                         <Route path="/fitness-test" element={<ProtectedRoute><FitnessTestPage /></ProtectedRoute>} />
                         <Route path="/fitness-test/:id" element={<ProtectedRoute><FitnessTestDetailPage /></ProtectedRoute>} />
+                        <Route path="/normal-fitness-test" element={<NormalFitnessTestPage />} />
+                        <Route path="/normal-fitness-test/:id" element={<NormalFitnessTestDetailPage />} />
                         <Route path="/events" element={<ProtectedRoute><EventsPage /></ProtectedRoute>} />
                         <Route path="/leaderboard" element={<ProtectedRoute><LeaderboardPage /></ProtectedRoute>} />
                         <Route path="/progress" element={<ProtectedRoute><ProgressPage /></ProtectedRoute>} />

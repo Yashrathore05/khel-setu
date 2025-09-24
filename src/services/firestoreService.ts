@@ -117,6 +117,40 @@ export const badgesService = {
         const ref = doc(db, 'badges', badgeId);
 		await updateDoc(ref, { earned: true, earnedAt: Timestamp.now() });
 	},
+    async ensureStarterBadges(userId: string): Promise<void> {
+        const athleteId = `${userId}_starter_athlete`;
+        const trainingId = `${userId}_starter_training`;
+        const athleteRef = doc(db, 'badges', athleteId);
+        const trainingRef = doc(db, 'badges', trainingId);
+        const [aSnap, tSnap] = await Promise.all([getDoc(athleteRef), getDoc(trainingRef)]);
+        const base = Timestamp.now();
+        if (!aSnap.exists()) {
+            await setDoc(athleteRef, {
+                id: athleteId,
+                userId,
+                name: 'Athlete Starter',
+                description: 'Welcome to Khel Setu! Athlete badge unlocked.',
+                icon: '🏅',
+                condition: 'First login/registration',
+                category: 'achievement',
+                earned: true,
+                earnedAt: base,
+            } as any);
+        }
+        if (!tSnap.exists()) {
+            await setDoc(trainingRef, {
+                id: trainingId,
+                userId,
+                name: 'Training Starter',
+                description: 'Kick-off your training journey!',
+                icon: '🎽',
+                condition: 'First login/registration',
+                category: 'fitness',
+                earned: true,
+                earnedAt: base,
+            } as any);
+        }
+    },
 };
 
 export const progressService = {

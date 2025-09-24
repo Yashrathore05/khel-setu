@@ -4,7 +4,7 @@ import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWith
 import type { ConfirmationResult } from 'firebase/auth';
 import type { User } from 'firebase/auth';
 import { firebaseApp } from '../lib/firebase';
-import { userProfileService } from '../services/firestoreService';
+import { userProfileService, badgesService } from '../services/firestoreService';
 
 export type AuthContextValue = {
 	user: User | null;
@@ -28,9 +28,14 @@ export function AuthProvider({ children }: PropsWithChildren) {
 	const [phoneConfirmation, setPhoneConfirmation] = useState<ConfirmationResult | null>(null);
 
 	useEffect(() => {
-		const unsub = onAuthStateChanged(auth, (u) => {
+		const unsub = onAuthStateChanged(auth, async (u) => {
 			setUser(u);
 			setLoading(false);
+			try {
+				if (u) {
+					await badgesService.ensureStarterBadges(u.uid);
+				}
+			} catch {}
 		});
 		return () => unsub();
 	}, [auth]);

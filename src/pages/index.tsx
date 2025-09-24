@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import Card from '../components/Card';
-import Badge from '../components/Badge';
+import Badge, { LottieBadge } from '../components/Badge';
 import { useDashboardData } from '../hooks/useDashboardData';
 import { Trophy, Clock, TrendingUp, User } from 'lucide-react';
 import { LineChart, Line, ResponsiveContainer } from 'recharts';
@@ -124,6 +124,19 @@ export default function HomePage() {
       {/* Leaderboard (Preview) */}
       <LeaderboardPreviewCard />
 
+      {/* Normal User Fitness Test (no registration) */}
+      <Link to="/normal-fitness-test" className="lg:col-span-2 group block">
+        <Card className="p-6 bg-black/40 rounded-2xl shadow-2xl backdrop-blur-sm group-hover:scale-[1.01] transition-transform">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="text-lg font-semibold">Quick Fitness Test</h3>
+              <p className="text-gray-400 text-sm mt-1">No registration required. Try the tests instantly.</p>
+            </div>
+            <Badge>Start</Badge>
+          </div>
+        </Card>
+      </Link>
+
       {/* Pending Tests */}
       <Card className="lg:col-span-2 p-6 bg-black/40 rounded-2xl shadow-2xl hover:scale-[1.01] transition-transform overflow-x-auto">
         <div className="flex items-center justify-between mb-4">
@@ -146,13 +159,33 @@ export default function HomePage() {
       {/* Badges */}
       <Card className="p-6 bg-black/40 rounded-2xl shadow-2xl hover:scale-[1.01] transition-transform">
         <h3 className="text-lg font-semibold mb-4">{t('badges')}</h3>
-        <div className="grid grid-cols-2 gap-4">
-          {badges.data?.length ? badges.data.slice(0, 4).map((b) => (
-            <div key={b.id} className="p-3 bg-gradient-to-br from-purple-800 via-pink-900 to-red-900 border border-gray-700 rounded-xl flex flex-col items-start text-white">
-              <p className="font-semibold">{b.name}</p>
-              <p className="text-xs capitalize">{b.category}</p>
-            </div>
-          )) : <p className="text-sm text-gray-500">{t('noData')}</p>}
+        <div className="grid grid-cols-2 md:grid-cols-0 gap-6 md:gap-0">
+          {badges.data?.length ? badges.data.slice(0, 4).map((b, idx) => {
+            const categoryKey = (b.category || '').toString().toLowerCase();
+            const animationPathMap: Record<string, string> = {
+              strength: '/athlete.json',
+              athlete: '/athlete.json',
+              training: '/training.json',
+              endurance: '/training.json',
+            };
+            const jsonPath = animationPathMap[categoryKey] || (idx % 2 === 0 ? '/athlete.json' : '/training.json');
+            return (
+              <div key={b.id} className="flex flex-col items-center text-white">
+                <LottieBadge
+                  name={b.name}
+                  jsonPath={jsonPath}
+                  hideLabel
+                  size="xl"
+                  className="flex flex-col items-center"
+                  containerClassName="w-24 h-24 sm:w-28 sm:h-28 md:w-32 md:h-32"
+                />
+                <div className="mt-3 text-center">
+                  <p className="font-semibold text-sm sm:text-base">{b.name}</p>
+                  <p className="text-[11px] sm:text-xs capitalize text-gray-200/80">{b.category}</p>
+                </div>
+              </div>
+            );
+          }) : <p className="text-sm text-gray-500">{t('noData')}</p>}
         </div>
       </Card>
 

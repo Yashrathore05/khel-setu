@@ -2,6 +2,15 @@
 
 Production-ready React + TypeScript + Vite app for capturing and evaluating sports fitness tests with automatic anti-cheat and video evidence.
 
+## Recent UI & Form Updates
+
+- Badges now use Lottie animations via `lottie-web`.
+  - Component: `src/components/Badge.tsx` → `LottieBadge` loads JSON from `public` (e.g., `/athlete.json`, `/training.json`).
+  - Home page badges show a large, centered animation with the badge name and category below. Grid is responsive with increased spacing.
+- Athlete Fitness Test Registration form now accepts values as-is (no mandatory validation).
+  - File: `src/components/FitnessRegistrationForm.tsx`
+  - Removed Aadhaar/mobile/email digit/format checks; inputs no longer restrict characters or require lengths; values are saved exactly as entered.
+
 ### Tech Stack
 - React 19, TypeScript, Vite 7, Tailwind CSS
 - Firebase Auth + Firestore (profiles, test results)
