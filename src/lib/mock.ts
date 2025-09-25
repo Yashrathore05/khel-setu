@@ -22,20 +22,18 @@ export function getMockUserProfile(userId: string): UserProfile {
         region: 'India',
         level: 'Beginner',
         avatar: undefined,
-        // @ts-expect-error mock timestamp
-        createdAt: new Date() as any,
-        // @ts-expect-error mock timestamp
-        updatedAt: new Date() as any,
+        createdAt: new Date() as unknown as any,
+        updatedAt: new Date() as unknown as any,
     };
 }
 
 export function getMockBadges(userId: string): Badge[] {
     const base: any = new Date();
     return [
-        { id: `${userId}_starter_athlete`, name: 'Athlete Starter', description: 'Welcome to Khel Setu!', icon: '🏅', condition: 'First login', earned: true, // @ts-expect-error ts time
-          earnedAt: base, category: 'achievement' },
-        { id: `${userId}_training_streak`, name: 'Training Streak', description: '3-day streak', icon: '🔥', condition: '3 days in a row', earned: true, // @ts-expect-error
-          earnedAt: base, category: 'fitness' },
+        { id: `${userId}_starter_athlete`, name: 'Athlete Starter', description: 'Welcome to Khel Setu!', icon: '🏅', condition: 'First login', earned: true,
+          earnedAt: base as unknown as any, category: 'achievement' },
+        { id: `${userId}_training_streak`, name: 'Training Streak', description: '3-day streak', icon: '🔥', condition: '3 days in a row', earned: true,
+          earnedAt: base as unknown as any, category: 'fitness' },
     ] as any;
 }
 
@@ -51,17 +49,18 @@ export function getMockProgress(userId: string): ProgressData {
         { testId: 'test8', testName: '4 X 10 Mts Shuttle Run', result: null, unit: 's', completedAt: null, status: 'incomplete', testType: 'input' },
         { testId: 'test10', testName: '800m / 1.6km Run', result: null, unit: 's', completedAt: null, status: 'incomplete', testType: 'input' },
     ] as any;
-    const completedTests = testResults.filter(r => r.status === 'completed').length;
+    const completedTests = testResults.filter((r: any) => r.status === 'completed').length;
     const overallScore = Math.round((completedTests / totalTests) * 100);
-    return {
+    const res: any = {
         userId,
         overallScore,
         benchmark: 55,
         improvement: 12,
-        // @ts-expect-error mock timestamp
-        lastUpdated: new Date() as any,
+        lastUpdated: new Date() as unknown as any,
         testHistory: [],
-    } as any;
+        testResults,
+    };
+    return res;
 }
 
 export function getMockFitnessSummary(userId: string) {
@@ -87,7 +86,8 @@ export function getMockFitnessSummary(userId: string) {
     });
 }
 
-export function getMockLeaderboard() {
+export function getMockLeaderboard(): Array<{ userId: string; completedTests: number; totalTests: number; overallProgress: number; profile: { id: string; name?: string; region?: string; avatar?: string; age?: number; gender?: 'Male'|'Female'|'Other'; level?: 'Beginner'|'Intermediate'|'Advanced' } }>
+{
     return [
         { userId: 'mock-athlete', completedTests: 6, totalTests: 10, overallProgress: 60, profile: { id: 'mock-athlete', name: 'athelete', region: 'India', level: 'Beginner' } },
         { userId: 'user_2', completedTests: 5, totalTests: 10, overallProgress: 50, profile: { id: 'user_2', name: 'Ravi', region: 'Delhi', level: 'Intermediate' } },

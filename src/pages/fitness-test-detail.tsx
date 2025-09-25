@@ -852,13 +852,7 @@ export default function FitnessTestDetailPage() {
                                 if (!blob) return;
                                 try {
                                     setSaving(true);
-                                    const file = new File([blob], `${id}_${user.uid}_${Date.now()}.png`, { type: 'image/png' });
-                                    const { supabase } = await import('../lib/supabase');
-                                    const path = `${user.uid}/${file.name}`;
-                                    const { error: upErr } = await supabase.storage.from('Fitness-Test').upload(path, file, { contentType: 'image/png', upsert: false });
-                                    if (upErr) throw upErr;
-                                    const { data } = supabase.storage.from('Fitness-Test').getPublicUrl(path);
-                                    const imageUrl = data.publicUrl;
+                                    // Mock save only; no upload or URL used
                                     // Mock save for height snapshot as well
                                     await new Promise((r) => setTimeout(r, 150));
                                     setCompleted(true);

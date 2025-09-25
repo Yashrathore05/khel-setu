@@ -36,7 +36,7 @@ export default function AppLayout({ children }: PropsWithChildren) {
 
   // Language Dropdown State (Indian regional languages only)
   const [langOpen, setLangOpen] = useState(false);
-  const [mobileNavOpen, setMobileNavOpen] = useState(false);
+  // Mobile nav removed; keep placeholders avoided to satisfy TS unused
   const [notifOpen, setNotifOpen] = useState(false);
   const { i18n } = useTranslation();
   const languageOptions = useMemo(
