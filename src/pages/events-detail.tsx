@@ -33,14 +33,14 @@ export default function EventDetailPage() {
         },
         onSuccess: async () => {
             // Optimistically update cached lists/details to fake increment
-            qc.setQueryData<any>(['events.upcoming'], (prev) => {
+            qc.setQueryData<any>(['events.upcoming'], (prev: Array<any> | undefined) => {
                 if (!prev || !Array.isArray(prev)) return prev;
                 return prev.map((ev) => ev.id === id
                     ? { ...ev, currentParticipants: Math.min((ev.currentParticipants || 0) + 1, ev.maxParticipants) }
                     : ev
                 );
             });
-            qc.setQueryData<any>(['event.detail', id], (prev) => {
+            qc.setQueryData<any>(['event.detail', id], (prev: any) => {
                 if (!prev) return prev;
                 return { ...prev, currentParticipants: Math.min((prev.currentParticipants || 0) + 1, prev.maxParticipants) };
             });

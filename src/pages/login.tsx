@@ -6,7 +6,7 @@ import Button from "../components/Button";
 import Input from "../components/Input";
 
 export default function LoginPage() {
-  const { signIn, signUp, signInWithGoogle } = useAuth();
+  const { signInWithGoogle } = useAuth();
   const navigate = useNavigate();
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
