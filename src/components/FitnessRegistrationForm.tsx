@@ -16,7 +16,7 @@ export default function FitnessRegistrationForm({ userId, onCompleted }: { userI
 	const [phone, setPhone] = useState('');
 	const [parentsPhone, setParentsPhone] = useState('');
 	const [saving, setSaving] = useState(false);
-	const [error, setError] = useState<string | null>(null);
+	// No validation errors displayed
 
 	// No validation: accept values as-is
 
@@ -47,7 +47,7 @@ export default function FitnessRegistrationForm({ userId, onCompleted }: { userI
 
 	return (
 		<Card className="max-w-2xl mx-auto p-6">
-			<h3 className="text-lg font-semibold mb-3">Fitness Test Registration</h3>
+			<h3 className="text-lg font-semibold mb-3">Assessment Registration</h3>
 			<div className="grid gap-3 sm:grid-cols-2">
 				<Input label="Full Name" value={name} onChange={(e) => setName(e.target.value)} />
 				<Input label="Father's Name" value={fathersName} onChange={(e) => setFathersName(e.target.value)} />
@@ -59,7 +59,6 @@ export default function FitnessRegistrationForm({ userId, onCompleted }: { userI
 				<Input label="Phone" value={phone} onChange={(e) => setPhone(e.target.value)} />
 				<Input label="Parent's Phone" value={parentsPhone} onChange={(e) => setParentsPhone(e.target.value)} />
 			</div>
-			{error && <p className="mt-2 text-sm text-red-600">{error}</p>}
 			<Button onClick={submit} disabled={saving} className="mt-4">{saving ? 'Saving...' : 'Start Tests'}</Button>
 		</Card>
 	);

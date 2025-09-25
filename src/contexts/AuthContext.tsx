@@ -28,16 +28,27 @@ export function AuthProvider({ children }: PropsWithChildren) {
 	const [phoneConfirmation, setPhoneConfirmation] = useState<ConfirmationResult | null>(null);
 
 	useEffect(() => {
-		const unsub = onAuthStateChanged(auth, async (u) => {
-			setUser(u);
-			setLoading(false);
-			try {
-				if (u) {
-					await badgesService.ensureStarterBadges(u.uid);
-				}
-			} catch {}
-		});
-		return () => unsub();
+        // Support mock login for local/demo usage
+        const stored = localStorage.getItem('mockUser');
+        if (stored) {
+            try {
+                const mock = JSON.parse(stored);
+                // Cast minimal shape to Firebase User for consumers
+                setUser({ uid: mock.uid, displayName: mock.displayName, email: mock.email } as unknown as User);
+                setLoading(false);
+                return;
+            } catch {}
+        }
+        const unsub = onAuthStateChanged(auth, async (u) => {
+            setUser(u);
+            setLoading(false);
+            try {
+                if (u) {
+                    await badgesService.ensureStarterBadges(u.uid);
+                }
+            } catch {}
+        });
+        return () => unsub();
 	}, [auth]);
 
 	const value = useMemo<AuthContextValue>(
@@ -58,16 +69,23 @@ export function AuthProvider({ children }: PropsWithChildren) {
                 });
             },
 			logout: async () => {
-				await signOut(auth);
+                // Clear mock if present, else perform real sign out
+                if (localStorage.getItem('mockUser')) {
+                    localStorage.removeItem('mockUser');
+                    setUser(null);
+                } else {
+                    await signOut(auth);
+                }
 			},
             signInWithGoogle: async () => {
-                const provider = new GoogleAuthProvider();
-                const cred = await signInWithPopup(auth, provider);
-                // Backfill profile on first Google sign-in
-                await userProfileService.updateUserProfile(cred.user.uid, {
-                    name: cred.user.displayName || cred.user.email || 'User',
-                    email: cred.user.email || '',
-                });
+                // Mock sign-in: create a fake athlete user and persist locally
+                const mock = {
+                    uid: 'mock-athlete',
+                    displayName: 'athelete',
+                    email: 'athelete@example.com',
+                };
+                localStorage.setItem('mockUser', JSON.stringify(mock));
+                setUser({ uid: mock.uid, displayName: mock.displayName, email: mock.email } as unknown as User);
             },
 			signInWithApple: async () => {
 				// Apple provider requires configuration in Firebase console and on Apple Developer

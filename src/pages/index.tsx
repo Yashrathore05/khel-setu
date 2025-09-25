@@ -9,10 +9,12 @@ import TestProgressService from '../services/testProgressService';
 import Avatar from '../components/Avatar';
 import { Link } from 'react-router-dom';
 import Skeleton from '../components/Skeleton';
+import { useAuth } from '../contexts/AuthContext';
 
 export default function HomePage() {
   const { t } = useTranslation();
   const { profile, progress, fitnessSummary, badges, testProgress } = useDashboardData();
+  const { user } = useAuth();
   const DEFAULT_TOTAL_TESTS = 10;
   const totalTests = fitnessSummary.data?.length ?? DEFAULT_TOTAL_TESTS;
   const completedCount = fitnessSummary.data?.filter((s: any) => s.status === 'completed').length ?? 0;
@@ -60,7 +62,7 @@ export default function HomePage() {
             <>
               <div className="flex items-center justify-between">
                 <div>
-                  <h2 className="text-xl font-bold">{`${t('welcomeBack')} ${profile.data?.name || ''}`}</h2>
+                  <h2 className="text-xl font-bold">{`${t('welcomeBack')} ${profile.data?.name || user?.displayName || (user?.email ? user.email.split('@')[0] : '') || 'athelete'}`}</h2>
                   <p className="text-gray-400 mt-1">{t('progressTracking')}</p>
                 </div>
                 <User size={40} className="text-gray-300" />
@@ -103,6 +105,26 @@ export default function HomePage() {
         </Card>
       </Link>
 
+      {/* SAI Online Assessment (Prominent) */}
+      <Link to="/fitness-test" className="lg:col-span-3 group block">
+        <Card className="relative overflow-hidden p-6 sm:p-7 rounded-2xl shadow-2xl backdrop-blur-sm group-hover:scale-[1.01] transition-transform bg-gradient-to-r from-indigo-600/30 via-purple-600/25 to-pink-500/20 border border-white/10">
+          <div className="absolute -right-16 -top-16 h-64 w-64 rounded-full bg-indigo-500/20 blur-3xl"></div>
+          <div className="absolute -left-20 -bottom-20 h-72 w-72 rounded-full bg-pink-500/10 blur-3xl"></div>
+          <div className="relative flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div>
+              <h3 className="text-2xl sm:text-3xl font-extrabold tracking-tight">SAI Online Assessment</h3>
+              <p className="text-gray-300 text-sm sm:text-base mt-2 max-w-2xl">Begin the Sports Authority of India assessment. Complete all tests in one session for best results.</p>
+            </div>
+            <div className="shrink-0">
+              <span className="inline-flex items-center gap-2 rounded-xl bg-white text-black px-4 py-2 text-sm sm:text-base font-semibold shadow">
+                Start Now
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+              </span>
+            </div>
+          </div>
+        </Card>
+      </Link>
+
       {/* Profile */}
       <Card className="p-6 bg-black/40 rounded-2xl shadow-2xl hover:scale-[1.01] transition-transform">
         <h3 className="text-lg font-semibold mb-4">{t('profile')}</h3>
@@ -123,6 +145,41 @@ export default function HomePage() {
 
       {/* Leaderboard (Preview) */}
       <LeaderboardPreviewCard />
+
+      {/* Badges (moved just after Leaderboard) */}
+      <Card className="p-6 bg-black/40 rounded-2xl shadow-2xl hover:scale-[1.01] transition-transform">
+        <h3 className="text-lg font-semibold mb-4">{t('badges')}</h3>
+        <div className="grid grid-cols-2 md:grid-cols-0 gap-6 md:gap-0">
+          {badges.data?.length ? badges.data.slice(0, 4).map((b, idx) => {
+            const categoryKey = (b.category || '').toString().toLowerCase();
+            const animationPathMap: Record<string, string> = {
+              strength: '/athlete.json',
+              athlete: '/athlete.json',
+              training: '/training.json',
+              endurance: '/training.json',
+            };
+            const jsonPath = animationPathMap[categoryKey] || (idx % 2 === 0 ? '/athlete.json' : '/training.json');
+            return (
+              <div key={b.id} className="flex flex-col items-center text-white">
+                <LottieBadge
+                  name={b.name}
+                  jsonPath={jsonPath}
+                  hideLabel
+                  size="xl"
+                  className="flex flex-col items-center"
+                  containerClassName="w-24 h-24 sm:w-28 sm:h-28 md:w-32 md:h-32"
+                />
+                <div className="mt-3 text-center">
+                  <p className="font-semibold text-sm sm:text-base">{b.name}</p>
+                  <p className="text-[11px] sm:text-xs capitalize text-gray-200/80">{b.category}</p>
+                </div>
+              </div>
+            );
+          }) : <p className="text-sm text-gray-500">{t('noData')}</p>}
+        </div>
+      </Card>
+
+      
 
       {/* Normal User Fitness Test (no registration) */}
       <Link to="/normal-fitness-test" className="lg:col-span-2 group block">
@@ -156,38 +213,7 @@ export default function HomePage() {
         </div>
       </Card>
 
-      {/* Badges */}
-      <Card className="p-6 bg-black/40 rounded-2xl shadow-2xl hover:scale-[1.01] transition-transform">
-        <h3 className="text-lg font-semibold mb-4">{t('badges')}</h3>
-        <div className="grid grid-cols-2 md:grid-cols-0 gap-6 md:gap-0">
-          {badges.data?.length ? badges.data.slice(0, 4).map((b, idx) => {
-            const categoryKey = (b.category || '').toString().toLowerCase();
-            const animationPathMap: Record<string, string> = {
-              strength: '/athlete.json',
-              athlete: '/athlete.json',
-              training: '/training.json',
-              endurance: '/training.json',
-            };
-            const jsonPath = animationPathMap[categoryKey] || (idx % 2 === 0 ? '/athlete.json' : '/training.json');
-            return (
-              <div key={b.id} className="flex flex-col items-center text-white">
-                <LottieBadge
-                  name={b.name}
-                  jsonPath={jsonPath}
-                  hideLabel
-                  size="xl"
-                  className="flex flex-col items-center"
-                  containerClassName="w-24 h-24 sm:w-28 sm:h-28 md:w-32 md:h-32"
-                />
-                <div className="mt-3 text-center">
-                  <p className="font-semibold text-sm sm:text-base">{b.name}</p>
-                  <p className="text-[11px] sm:text-xs capitalize text-gray-200/80">{b.category}</p>
-                </div>
-              </div>
-            );
-          }) : <p className="text-sm text-gray-500">{t('noData')}</p>}
-        </div>
-      </Card>
+      
 
       {/* Completed Tests */}
       <Card className="lg:col-span-3 p-6 bg-black/40 rounded-2xl shadow-2xl hover:scale-[1.01] transition-transform">

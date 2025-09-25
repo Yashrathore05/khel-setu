@@ -5,10 +5,11 @@ import { useAuth } from './contexts/AuthContext';
 import AppLayout from './layouts/AppLayout';
 import HomePage from './pages/index';
 import ChatbotPage from './pages/chatbot';
-import FitnessTestPage from './pages/fitness-test';
+import AssessmentPage from './pages/assessment';
 import FitnessTestDetailPage from './pages/fitness-test-detail';
 import NormalFitnessTestPage from './pages/normal-fitness-test';
 import NormalFitnessTestDetailPage from './pages/normal-fitness-test-detail';
+import AssessmentBreakPage from './pages/assessment-break';
 import EventsPage from './pages/events';
 import ProfilePage from './pages/profile';
 import LoginPage from './pages/login';
@@ -62,8 +63,9 @@ function AppInner() {
                         <Route path="/signup" element={<SignupPage />} />
                         <Route path="/" element={<ProtectedRoute><HomePage /></ProtectedRoute>} />
                         <Route path="/chatbot" element={<ProtectedRoute><ChatbotPage /></ProtectedRoute>} />
-                        <Route path="/fitness-test" element={<ProtectedRoute><FitnessTestPage /></ProtectedRoute>} />
+                        <Route path="/fitness-test" element={<ProtectedRoute><AssessmentPage /></ProtectedRoute>} />
                         <Route path="/fitness-test/:id" element={<ProtectedRoute><FitnessTestDetailPage /></ProtectedRoute>} />
+                        <Route path="/fitness-test-break/:nextId" element={<ProtectedRoute><AssessmentBreakPage /></ProtectedRoute>} />
                         <Route path="/normal-fitness-test" element={<NormalFitnessTestPage />} />
                         <Route path="/normal-fitness-test/:id" element={<NormalFitnessTestDetailPage />} />
                         <Route path="/events" element={<ProtectedRoute><EventsPage /></ProtectedRoute>} />

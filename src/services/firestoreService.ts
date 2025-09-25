@@ -2,6 +2,7 @@ import {
 	collection, doc, getDocs, getDoc, setDoc, updateDoc, query, where, orderBy, limit, onSnapshot, Timestamp
 } from 'firebase/firestore';
 import { db } from '../lib/firestore';
+import { isMockUserActive, getMockEvents, getMockUserProfile, getMockBadges, getMockProgress } from '../lib/mock';
 
 export interface UserProfile {
 	id: string;
@@ -66,6 +67,9 @@ export interface Event {
 
 export const userProfileService = {
 	async getUserProfile(userId: string): Promise<UserProfile | null> {
+		if (isMockUserActive()) {
+			return getMockUserProfile(userId);
+		}
 		const docRef = doc(db, 'users', userId);
 		const snap = await getDoc(docRef);
 		return snap.exists() ? ({ id: snap.id, ...snap.data() } as UserProfile) : null;
@@ -109,6 +113,9 @@ export const testsService = {
 
 export const badgesService = {
 	async getUserBadges(userId: string): Promise<Badge[]> {
+		if (isMockUserActive()) {
+			return getMockBadges(userId);
+		}
 		const qRef = query(collection(db, 'badges'), where('userId', '==', userId), orderBy('earnedAt', 'desc'));
 		const qs = await getDocs(qRef);
 		return qs.docs.map(d => ({ id: d.id, ...d.data() } as Badge));
@@ -155,6 +162,9 @@ export const badgesService = {
 
 export const progressService = {
 	async getUserProgress(userId: string): Promise<ProgressData | null> {
+		if (isMockUserActive()) {
+			return getMockProgress(userId) as any;
+		}
 		const ref = doc(db, 'progress', userId);
 		const snap = await getDoc(ref);
 		return snap.exists() ? (snap.data() as ProgressData) : null;
@@ -212,11 +222,18 @@ export const progressService = {
 
 export const eventsService = {
 	async getUpcomingEvents(): Promise<Event[]> {
+		if (isMockUserActive()) {
+			return getMockEvents();
+		}
 		const qRef = query(collection(db, 'events'), where('date', '>=', Timestamp.now()), where('registrationOpen', '==', true), orderBy('date', 'asc'), limit(10));
 		const qs = await getDocs(qRef);
 		return qs.docs.map(d => ({ id: d.id, ...d.data() } as Event));
 	},
     async registerForEvent(eventId: string, userId: string): Promise<void> {
+		if (isMockUserActive()) {
+			// no-op in mock mode
+			return;
+		}
 		const eventRef = doc(db, 'events', eventId);
 		const snap = await getDoc(eventRef);
 		if (snap.exists()) {

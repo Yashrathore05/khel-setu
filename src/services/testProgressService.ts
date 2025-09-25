@@ -1,5 +1,6 @@
 import { collection, doc, getDocs, getDoc, query, setDoc, where, serverTimestamp } from 'firebase/firestore';
 import { db } from '../lib/firestore';
+import { isMockUserActive, getMockFitnessSummary, getMockLeaderboard, getMockProgress } from '../lib/mock';
 
 interface TestResult {
 	testId: string;
@@ -45,7 +46,20 @@ class TestProgressService {
 		return TestProgressService.instance;
 	}
 
-	async getTestProgress(userId: string): Promise<TestProgress> {
+    async getTestProgress(userId: string): Promise<TestProgress> {
+        if (isMockUserActive()) {
+            const mock = getMockProgress(userId) as any;
+            return {
+                userId,
+                totalTests: 10,
+                completedTests: 6,
+                incompleteTests: 2,
+                failedTests: 0,
+                overallProgress: 60,
+                testResults: mock.testResults || [],
+                lastUpdated: new Date(),
+            } as any;
+        }
         const testResultsRef = collection(db, 'fitnessTestResults');
         // Avoid requiring composite index; simple where filter only
         const q = query(testResultsRef, where('userId', '==', userId));
@@ -74,8 +88,11 @@ class TestProgressService {
 		return { userId, totalTests, completedTests, incompleteTests, failedTests, overallProgress, testResults, lastUpdated: new Date() };
 	}
 
-	async getTestSummary(userId: string): Promise<TestSummary[]> {
-		const progress = await this.getTestProgress(userId);
+    async getTestSummary(userId: string): Promise<TestSummary[]> {
+        if (isMockUserActive()) {
+            return getMockFitnessSummary(userId) as any;
+        }
+        const progress = await this.getTestProgress(userId);
 		const allTests = [
 			{ testId: 'test1', testName: 'Height', qualityTested: '' },
 			{ testId: 'test2', testName: 'Weight', qualityTested: '' },
@@ -120,6 +137,9 @@ class TestProgressService {
         overallProgress: number;
         profile: { id: string; name?: string; region?: string; avatar?: string; age?: number; gender?: 'Male'|'Female'|'Other'; level?: 'Beginner'|'Intermediate'|'Advanced' } | null;
     }>> {
+        if (isMockUserActive()) {
+            return getMockLeaderboard();
+        }
         // Fetch all completed fitness test results; aggregate per user
         // Note: Without Firestore server-side aggregation, this is client-side.
         const resultsRef = collection(db, 'fitnessTestResults');

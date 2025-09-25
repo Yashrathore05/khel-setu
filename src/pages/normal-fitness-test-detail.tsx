@@ -35,7 +35,8 @@ export default function NormalFitnessTestDetailPage() {
     const [recording, setRecording] = useState(false);
     const recordTimerRef = useRef<number | null>(null);
     const recordingStartRef = useRef<number | null>(null);
-    const [elapsedSec, setElapsedSec] = useState<number>(0);
+    // Keep only setter to avoid unused state variable
+    const [, setElapsedSec] = useState<number>(0);
     const [error, setError] = useState<string | null>(null);
     const [showViolation, setShowViolation] = useState<boolean>(false);
     const videoRef = useRef<HTMLVideoElement | null>(null);
@@ -48,8 +49,7 @@ export default function NormalFitnessTestDetailPage() {
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
     const cocoModelRef = useRef<any>(null);
     const poseModelRef = useRef<any>(null);
-    const [pxPerCm, setPxPerCm] = useState<number | null>(null);
-    const [calibrating, setCalibrating] = useState<boolean>(false);
+    const [pxPerCm] = useState<number | null>(null);
     const [jumpBaselineY, setJumpBaselineY] = useState<number | null>(null);
     const [jumpPeakY, setJumpPeakY] = useState<number | null>(null);
     const [jumpResultCm, setJumpResultCm] = useState<number | null>(null);
@@ -173,68 +173,7 @@ export default function NormalFitnessTestDetailPage() {
         setShowViolation(true);
     }
 
-    async function calibrateWithA4() {
-        if (!videoRef.current) return;
-        const cv = (window as unknown as { cv?: any }).cv;
-        if (!cv) { setError('OpenCV not loaded yet'); return; }
-        try {
-            setCalibrating(true);
-            const video = videoRef.current as HTMLVideoElement;
-            const w = video.videoWidth || video.clientWidth;
-            const h = video.videoHeight || video.clientHeight;
-            const off = document.createElement('canvas');
-            off.width = w; off.height = h;
-            const octx = off.getContext('2d');
-            if (!octx) throw new Error('Canvas context unavailable');
-            octx.drawImage(video, 0, 0, w, h);
-            const src = cv.imread(off);
-            const gray = new cv.Mat();
-            const blur = new cv.Mat();
-            const edges = new cv.Mat();
-            cv.cvtColor(src, gray, cv.COLOR_RGBA2GRAY);
-            cv.GaussianBlur(gray, blur, new cv.Size(5,5), 0, 0, cv.BORDER_DEFAULT);
-            cv.Canny(blur, edges, 50, 150);
-            const contours = new cv.MatVector();
-            const hierarchy = new cv.Mat();
-            cv.findContours(edges, contours, hierarchy, cv.RETR_LIST, cv.CHAIN_APPROX_SIMPLE);
-            let bestH = 0;
-            let bestWH: [number, number] | null = null;
-            for (let i = 0; i < contours.size(); i++) {
-                const cnt = contours.get(i);
-                const peri = cv.arcLength(cnt, true);
-                const approx = new cv.Mat();
-                cv.approxPolyDP(cnt, approx, 0.02 * peri, true);
-                if (approx.rows === 4) {
-                    const rect = cv.boundingRect(approx);
-                    const ar = rect.width / rect.height;
-                    const arInv = rect.height / rect.width;
-                    const ratio = Math.max(ar, arInv);
-                    if (ratio > 1.3 && ratio < 1.5) {
-                        if (rect.height > bestH) {
-                            bestH = rect.height;
-                            bestWH = [rect.width, rect.height];
-                        }
-                    }
-                }
-                approx.delete();
-                cnt.delete();
-            }
-            const A4_HEIGHT_CM = 29.7;
-            if (bestWH) {
-                const pixels = bestWH[1];
-                const scale = pixels / A4_HEIGHT_CM;
-                if (scale > 0) setPxPerCm(scale);
-                setError(null);
-            } else {
-                setError('Calibration failed. Ensure an A4 sheet fully visible in frame.');
-            }
-            src.delete(); gray.delete(); blur.delete(); edges.delete(); contours.delete(); hierarchy.delete();
-        } catch (e: any) {
-            setError(e?.message || 'Calibration error');
-        } finally {
-            setCalibrating(false);
-        }
-    }
+    // Calibration removed in normal test detail to simplify quick tests
 
     async function analyzeFrame() {
         if (!videoRef.current) return;
@@ -784,24 +723,7 @@ export default function NormalFitnessTestDetailPage() {
                         </div>
                     </div>
                 )}
-                {(id === 'test1' || id === 'test3' || id === 'test4' || id === 'test5' || id === 'test6' || id === 'test7' || id === 'test8' || id === 'test9' || id === 'test10') && (
-                    <div className="text-xs text-gray-400">
-                        <span>People detected: {personCount}</span>
-                        {id === 'test1' && estimatedHeightCm ? <span className="ml-2">Estimated height: {estimatedHeightCm} cm</span> : null}
-                        {id === 'test3' && (pxPerCm ? <span className="ml-2">Reach distance: {estimatedHeightCm ?? '-'} cm</span> : <span className="ml-2 text-yellow-400">Calibrate to get cm</span>)}
-                        {id === 'test4' && (pxPerCm ? <span className="ml-2">Jump height: {jumpResultCm ?? '-'} cm</span> : <span className="ml-2 text-yellow-400">Calibrate to get cm</span>)}
-                        {id === 'test5' && (pxPerCm ? <span className="ml-2">Broad jump: {broadResultCm ?? '-'} cm</span> : <span className="ml-2 text-yellow-400">Calibrate to get cm</span>)}
-                        {id === 'test6' && (pxPerCm ? <span className="ml-2">Ball throw: {ballResultCm ?? '-'} cm</span> : <span className="ml-2 text-yellow-400">Calibrate to get cm</span>)}
-                        {id === 'test7' && <span className="ml-2">30m time: {t7Secs ?? '-'} s</span>}
-                        {id === 'test8' && <span className="ml-2">Shuttle time: {t8Secs ?? '-'} s</span>}
-                        {id === 'test9' && <span className="ml-2">Sit-ups: {t9Reps}</span>}
-                        {id === 'test10' && <span className="ml-2">Laps: {t10Laps} {t10Secs ? `(time: ${t10Secs}s)` : ''}</span>}
-                        <div className="mt-2 flex items-center gap-2">
-                            <button onClick={calibrateWithA4} disabled={calibrating} className="rounded border px-2 py-1">{calibrating ? 'Calibrating…' : 'Calibrate with A4'}</button>
-                            {pxPerCm && <span className="text-green-400">Calibrated</span>}
-                        </div>
-                    </div>
-                )}
+                {/* Removed quick info block inside test2 branch to satisfy TS control flow narrowing */}
             </Card>
         );
     }

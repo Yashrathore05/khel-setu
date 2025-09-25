@@ -1,7 +1,6 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useEffect, useRef, useState } from 'react';
-import TestProgressService from '../services/testProgressService';
 import Card from '../components/Card';
 
 const TEST_UNITS: Record<string, string> = {
@@ -23,6 +22,7 @@ export default function FitnessTestDetailPage() {
 	const { user } = useAuth();
     const [saving, setSaving] = useState(false);
     const [recording, setRecording] = useState(false);
+    const [completed, setCompleted] = useState(false);
     const recordTimerRef = useRef<number | null>(null);
     const recordingStartRef = useRef<number | null>(null);
     const [elapsedSec, setElapsedSec] = useState<number>(0);
@@ -40,6 +40,7 @@ export default function FitnessTestDetailPage() {
     const poseModelRef = useRef<any>(null);
     const [pxPerCm, setPxPerCm] = useState<number | null>(null);
     const [calibrating, setCalibrating] = useState<boolean>(false);
+    const [coachMessage, setCoachMessage] = useState<string>('Be ready. Align yourself in the frame.');
 	// Vertical jump state (test4)
 	const [jumpBaselineY, setJumpBaselineY] = useState<number | null>(null);
 	const [jumpPeakY, setJumpPeakY] = useState<number | null>(null);
@@ -73,6 +74,37 @@ export default function FitnessTestDetailPage() {
 	const [t10StartMs, setT10StartMs] = useState<number | null>(null);
 	const [t10Secs, setT10Secs] = useState<number | null>(null);
 	const unit = TEST_UNITS[id || 'test1'] || '';
+
+    const TEST_ORDER = ['test1','test2','test3','test4','test5','test6','test7','test8','test9','test10'];
+    function getNextNavigationTarget(currentId: string): string {
+        const idx = TEST_ORDER.indexOf(currentId);
+        if (idx === -1 || idx === TEST_ORDER.length - 1) return '/fitness-test';
+        const nextId = TEST_ORDER[idx + 1];
+        if (currentId === 'test3') return `/fitness-test-break/${nextId}`;
+        return `/fitness-test/${nextId}`;
+    }
+
+    useEffect(() => {
+        if (completed) return; // freeze message once completed
+        const idleMessages = [
+            'Be ready. Align yourself in the frame.',
+            'Ensure proper lighting for accurate tracking.',
+            'Keep the camera steady before you begin.',
+        ];
+        const activeMessages = [
+            'Great job! Maintain your form.',
+            'You are doing great. Keep going!',
+            'Stay focused. Smooth and steady.',
+        ];
+        const arr = recording ? activeMessages : idleMessages;
+        let i = 0;
+        setCoachMessage(arr[0]);
+        const t = window.setInterval(() => {
+            i = (i + 1) % arr.length;
+            setCoachMessage(arr[i]);
+        }, 5000);
+        return () => window.clearInterval(t);
+    }, [recording, completed]);
 
     useEffect(() => {
         return () => {
@@ -718,74 +750,19 @@ export default function FitnessTestDetailPage() {
         setElapsedSec(0);
     }
 
-    async function uploadBlob(blob: Blob) {
-        if (!id || !user) return;
-        try {
-            setSaving(true);
-            const file = new File([blob], `${id}_${user.uid}_${Date.now()}.webm`, { type: 'video/webm' });
-            const { supabase } = await import('../lib/supabase');
-            const path = `${user.uid}/${file.name}`;
-            const { error: upErr } = await supabase.storage.from('Fitness-Test').upload(path, file, { contentType: 'video/webm', upsert: false });
-            if (upErr) throw upErr;
-            const { data } = supabase.storage.from('Fitness-Test').getPublicUrl(path);
-            const videoUrl = data.publicUrl;
-            // Prepare result values to avoid deeply nested ternaries
-            const resultValue = id === 'test4' ? (jumpResultCm ?? null)
-                : id === 'test5' ? (broadResultCm ?? null)
-                : id === 'test6' ? (ballResultCm ?? null)
-                : id === 'test7' ? (t7Secs ?? null)
-                : id === 'test8' ? (t8Secs ?? null)
-                : id === 'test9' ? (t9Reps as unknown as number | null)
-                : id === 'test10' ? (t10Secs ?? null)
-                : null;
-            const integrity = id === 'test4' ? {
-                personCount,
-                pxPerCm: pxPerCm ?? null,
-                calibrated: !!pxPerCm,
-                baselineY: jumpBaselineY,
-                peakY: jumpPeakY,
-            } : id === 'test5' ? {
-                personCount,
-                pxPerCm: pxPerCm ?? null,
-                calibrated: !!pxPerCm,
-                takeoff: broadBaseline,
-                landing: broadMaxPoint,
-            } : id === 'test6' ? {
-                pxPerCm: pxPerCm ?? null,
-                calibrated: !!pxPerCm,
-                startX: ballStartX,
-                maxDxPx: ballMaxDxPx,
-            } : id === 'test7' ? {
-                startMs: t7StartMs,
-                finishMs: t7FinishMs,
-            } : id === 'test8' ? {
-                startMs: t8StartMs,
-                finishMs: t8FinishMs,
-                crossings: t8CrossCountRef.current,
-            } : id === 'test9' ? {
-                reps: t9Reps,
-            } : id === 'test10' ? {
-                laps: t10Laps,
-                startMs: t10StartMs,
-            } : undefined;
-            await TestProgressService.markTestAsCompleted(user.uid, id, {
-                testId: id,
-                testName: id,
-                result: resultValue,
-                unit,
-                testType: 'video',
-                videoUrl,
-                integrityResult: integrity,
-            });
-            navigate('/fitness-test');
-        } catch (e: any) {
-            setError(e?.message || 'Failed to upload');
-        } finally {
-            setSaving(false);
-        }
+    async function uploadBlob(_blob: Blob) {
+        if (!id) return;
+        setSaving(true);
+        // Mock save: brief delay then proceed
+        await new Promise((r) => setTimeout(r, 150));
+        setCompleted(true);
+        setCoachMessage('You have done great! Preparing next test...');
+        const target = getNextNavigationTarget(id);
+        setSaving(false);
+        setTimeout(() => navigate(target), 250);
     }
 
-    // Weight test (test2) remains manual input only
+    // Weight test (test2) remains manual input only (mock save)
     if (id === 'test2') {
         return (
             <Card className="mx-auto max-w-lg" title="Submit Weight">
@@ -798,20 +775,15 @@ export default function FitnessTestDetailPage() {
                     <div className="flex items-center gap-2">
                         <button onClick={() => navigate(-1)} className="rounded border px-3 py-1.5">Cancel</button>
                         <button onClick={async () => {
-                            if (!id || !user) return;
+                            if (!id) return;
                             const num = Number(inputValue);
                             if (Number.isNaN(num)) { setError('Enter a valid number'); return; }
                             setSaving(true);
-                            try {
-                                await TestProgressService.markTestAsCompleted(user.uid, id, {
-                                    testId: id,
-                                    testName: id,
-                                    result: num,
-                                    unit,
-                                    testType: 'input',
-                                });
-                                navigate('/fitness-test');
-                            } finally { setSaving(false); }
+                            await new Promise((r) => setTimeout(r, 150));
+                            setSaving(false);
+                            setCoachMessage('You have done great! Preparing next test...');
+                            const target = getNextNavigationTarget(id);
+                            setTimeout(() => navigate(target), 250);
                         }} disabled={saving} className="rounded bg-black px-3 py-1.5 text-white disabled:opacity-50">{saving ? 'Saving...' : 'Submit'}</button>
                     </div>
                 </div>
@@ -887,21 +859,12 @@ export default function FitnessTestDetailPage() {
                                     if (upErr) throw upErr;
                                     const { data } = supabase.storage.from('Fitness-Test').getPublicUrl(path);
                                     const imageUrl = data.publicUrl;
-                                    // persist integrity + height
-                                    await TestProgressService.markTestAsCompleted(user.uid, id, {
-                                        testId: id,
-                                        testName: id,
-                                        result: estimatedHeightCm ?? null,
-                                        unit,
-                                        testType: 'input',
-                                        imageUrl,
-                                        integrityResult: {
-                                            personCount,
-                                            pxPerCm: pxPerCm ?? null,
-                                            calibrated: !!pxPerCm,
-                                        }
-                                    });
-                                    navigate('/fitness-test');
+                                    // Mock save for height snapshot as well
+                                    await new Promise((r) => setTimeout(r, 150));
+                                    setCompleted(true);
+                                    setCoachMessage('You have done great! Preparing next test...');
+                                    const target = getNextNavigationTarget(id);
+                                    setTimeout(() => navigate(target), 250);
                                 } catch (e: any) { setError(e?.message || 'Failed to save'); }
                                 finally { setSaving(false); }
                             }, 'image/png');
@@ -912,6 +875,16 @@ export default function FitnessTestDetailPage() {
                             <button onClick={stopRecordingAndSubmit} disabled={!recording || saving} className="rounded bg-black px-3 py-1.5 text-white disabled:opacity-50">{saving ? 'Uploading...' : 'Stop & Submit'}</button>
                         </>
                     )}
+                </div>
+                {/* AI Coach Panel */}
+                <div className="rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm">
+                    <div className="flex items-center gap-2">
+                        <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-400/20">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 20v-6"/><path d="M6 20v-4"/><path d="M18 20v-8"/><path d="M2 12l10-9 10 9"/></svg>
+                        </span>
+                        <span className="font-semibold text-gray-200">AI Coach</span>
+                    </div>
+                    <p className="mt-1 text-gray-300">{coachMessage}</p>
                 </div>
             </div>
         </Card>
