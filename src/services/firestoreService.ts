@@ -221,32 +221,20 @@ export const progressService = {
 };
 
 export const eventsService = {
-	async getUpcomingEvents(): Promise<Event[]> {
-		if (isMockUserActive()) {
-			return getMockEvents();
-		}
-		const qRef = query(collection(db, 'events'), where('date', '>=', Timestamp.now()), where('registrationOpen', '==', true), orderBy('date', 'asc'), limit(10));
-		const qs = await getDocs(qRef);
-		return qs.docs.map(d => ({ id: d.id, ...d.data() } as Event));
-	},
-    async registerForEvent(eventId: string, userId: string): Promise<void> {
-		if (isMockUserActive()) {
-			// no-op in mock mode
-			return;
-		}
-		const eventRef = doc(db, 'events', eventId);
-		const snap = await getDoc(eventRef);
-		if (snap.exists()) {
-			const data = snap.data() as Event;
-			if (data.currentParticipants < data.maxParticipants) {
-				await updateDoc(eventRef, { currentParticipants: data.currentParticipants + 1 });
-				const participantRef = doc(db, 'eventParticipants', `${eventId}_${userId}`);
-				await setDoc(participantRef, { eventId, userId, registeredAt: Timestamp.now() });
-            } else {
-                throw new Error('Event is full');
-            }
-		}
-	},
+    async getUpcomingEvents(): Promise<Event[]> {
+        // Mock-only behavior: always return mock events
+        return getMockEvents();
+    },
+    async getEventById(eventId: string): Promise<Event | null> {
+        // Mock-only behavior: derive from mock list
+        const list = getMockEvents();
+        return list.find((e) => e.id === eventId) || null;
+    },
+    async registerForEvent(_eventId: string, _userId: string): Promise<void> {
+        // Mock-only behavior: simulate latency, no backend writes
+        await new Promise((resolve) => setTimeout(resolve, 800));
+        return;
+    },
 };
 
 export const realTimeService = {

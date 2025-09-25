@@ -32,7 +32,17 @@ function TabLink({ to, label, icon, end }: { to: string; label: string; icon: (i
 export default function AppLayout({ children }: PropsWithChildren) {
   const { user, logout } = useAuth();
   const location = useLocation();
-  const hideHeader = location.pathname.startsWith("/fitness-test") || location.pathname.startsWith("/fitness-test-break");
+  const hideHeader =
+    location.pathname.startsWith("/fitness-test") ||
+    location.pathname.startsWith("/fitness-test-break") ||
+    location.pathname.startsWith("/login");
+
+  const hideFooter =
+    location.pathname.startsWith("/fitness-test") ||
+    location.pathname.startsWith("/fitness-test-break") ||
+    location.pathname.startsWith("/assessment") ||
+    location.pathname.startsWith("/login") ||
+    location.pathname.startsWith("/signup");
 
   // Language Dropdown State (Indian regional languages only)
   const [langOpen, setLangOpen] = useState(false);
@@ -84,9 +94,7 @@ export default function AppLayout({ children }: PropsWithChildren) {
           {/* Logo */}
           <Link to="/" className="flex items-center gap-3">
             <img src="/images/logo.png" alt="Khel Setu" className="h-12 sm:h-14 w-12 sm:w-14 rounded-full object-cover border border-white/20 shadow-lg drop-shadow-[0_2px_10px_rgba(59,130,246,0.35)]" />
-            <span className="hidden sm:inline text-xl sm:text-2xl font-extrabold tracking-wide">
-              Khel Setu
-            </span>
+            <span className="text-lg sm:text-2xl font-extrabold tracking-wide">Khel Setu</span>
           </Link>
 
           {/* NAVIGATION */}
@@ -130,24 +138,55 @@ export default function AppLayout({ children }: PropsWithChildren) {
                 <span className="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-red-500 text-white text-[10px] flex items-center justify-center">{mockNotifications.length}</span>
               </button>
               {notifOpen && (
-                <div className="absolute right-0 mt-2 w-80 max-w-[90vw] rounded-xl bg-black/90 border border-white/10 shadow-lg backdrop-blur-md z-50">
-                  <div className="px-4 py-2 border-b border-white/10 flex items-center justify-between">
-                    <span className="text-sm font-semibold">Notifications</span>
-                    <button onClick={() => setNotifOpen(false)} className="text-xs text-gray-400 hover:text-white">Close</button>
+                <>
+                  {/* Desktop/Tablet dropdown */}
+                  <div className="hidden sm:block absolute right-0 mt-2 w-80 max-w-[90vw] rounded-xl bg-black/90 border border-white/10 shadow-lg backdrop-blur-md z-50">
+                    <div className="px-4 py-2 border-b border-white/10 flex items-center justify-between">
+                      <span className="text-sm font-semibold">Notifications</span>
+                      <button onClick={() => setNotifOpen(false)} className="text-xs text-gray-400 hover:text-white">Close</button>
+                    </div>
+                    <div className="max-h-80 overflow-auto">
+                      {mockNotifications.map((n) => (
+                        <div key={n.id} className="px-4 py-3 hover:bg-white/5">
+                          <div className="text-sm font-semibold">{n.title}</div>
+                          <div className="text-xs text-gray-300 mt-0.5">{n.message}</div>
+                          <div className="text-[10px] text-gray-500 mt-1">{n.time}</div>
+                        </div>
+                      ))}
+                      {mockNotifications.length === 0 && (
+                        <div className="px-4 py-6 text-sm text-gray-400">No notifications</div>
+                      )}
+                    </div>
                   </div>
-                  <div className="max-h-80 overflow-auto">
-                    {mockNotifications.map((n) => (
-                      <div key={n.id} className="px-4 py-3 hover:bg-white/5">
-                        <div className="text-sm font-semibold">{n.title}</div>
-                        <div className="text-xs text-gray-300 mt-0.5">{n.message}</div>
-                        <div className="text-[10px] text-gray-500 mt-1">{n.time}</div>
+
+                  {/* Mobile centered overlay */}
+                  <div
+                    className="sm:hidden fixed inset-0 z-50 bg-black/60 backdrop-blur flex items-start justify-center pt-16 px-4"
+                    onClick={() => setNotifOpen(false)}
+                  >
+                    <div
+                      className="w-full max-w-sm rounded-2xl bg-black/90 border border-white/10 shadow-lg"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <div className="px-4 py-2 border-b border-white/10 flex items-center justify-between">
+                        <span className="text-sm font-semibold">Notifications</span>
+                        <button onClick={() => setNotifOpen(false)} className="text-xs text-gray-400 hover:text-white">Close</button>
                       </div>
-                    ))}
-                    {mockNotifications.length === 0 && (
-                      <div className="px-4 py-6 text-sm text-gray-400">No notifications</div>
-                    )}
+                      <div className="max-h-80 overflow-auto">
+                        {mockNotifications.map((n) => (
+                          <div key={n.id} className="px-4 py-3 hover:bg-white/5">
+                            <div className="text-sm font-semibold">{n.title}</div>
+                            <div className="text-xs text-gray-300 mt-0.5">{n.message}</div>
+                            <div className="text-[10px] text-gray-500 mt-1">{n.time}</div>
+                          </div>
+                        ))}
+                        {mockNotifications.length === 0 && (
+                          <div className="px-4 py-6 text-sm text-gray-400">No notifications</div>
+                        )}
+                      </div>
+                    </div>
                   </div>
-                </div>
+                </>
               )}
             </div>
             {/* LANGUAGE DROPDOWN */}
@@ -182,7 +221,9 @@ export default function AppLayout({ children }: PropsWithChildren) {
             {/* USER AUTH */}
             {user ? (
               <div className="flex items-center gap-3">
-                <Avatar name={user.displayName || user.email || "User"} size={36} />
+                <Link to="/profile" aria-label="Profile" className="rounded-full focus:outline-none focus:ring-2 focus:ring-white/30">
+                  <Avatar name={user.displayName || user.email || "User"} size={36} />
+                </Link>
                 <Button
                   onClick={logout}
                   size="sm"
@@ -237,12 +278,14 @@ export default function AppLayout({ children }: PropsWithChildren) {
       )}
 
       {/* FOOTER */}
+      {!hideFooter && (
       <footer className="mt-8 border-t border-white/10 bg-black/40 backdrop-blur-sm">
         <div className="mx-auto max-w-6xl px-4 py-6 text-sm text-gray-400 flex items-center justify-between">
           <span>© {new Date().getFullYear()} Khel Setu</span>
           <span className="hidden sm:inline">Developed by Code Sprinters team</span>
         </div>
       </footer>
+      )}
     </div>
   );
 }

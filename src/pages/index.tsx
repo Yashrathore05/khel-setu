@@ -40,6 +40,26 @@ export default function HomePage() {
 
   return (
     <div className="grid gap-5 sm:gap-6 lg:grid-cols-3">
+      {/* SAI Online Assessment (Prominent) */}
+      <Link to="/fitness-test" className="lg:col-span-3 group block">
+        <Card className="relative overflow-hidden p-6 sm:p-7 rounded-2xl shadow-2xl backdrop-blur-sm group-hover:scale-[1.01] transition-transform bg-gradient-to-r from-indigo-600/30 via-purple-600/25 to-pink-500/20 border border-white/10">
+          <div className="absolute -right-16 -top-16 h-64 w-64 rounded-full bg-indigo-500/20 blur-3xl"></div>
+          <div className="absolute -left-20 -bottom-20 h-72 w-72 rounded-full bg-pink-500/10 blur-3xl"></div>
+          <div className="relative flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div>
+              <h3 className="text-2xl sm:text-3xl font-extrabold tracking-tight">SAI Online Assessment</h3>
+              <p className="text-gray-300 text-sm sm:text-base mt-2 max-w-2xl">Begin the Sports Authority of India assessment. Complete all tests in one session for best results.</p>
+            </div>
+            <div className="shrink-0">
+              <span className="inline-flex items-center gap-2 rounded-xl bg-white text-black px-4 py-2 text-sm sm:text-base font-semibold shadow">
+                Start Now
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+              </span>
+            </div>
+          </div>
+        </Card>
+      </Link>
+
       {/* Welcome & Progress */}
       <Link to="/progress" className="lg:col-span-2 group block">
         <Card className="p-6 bg-black/40 rounded-2xl shadow-2xl backdrop-blur-sm group-hover:scale-[1.01] transition-transform">
@@ -105,25 +125,7 @@ export default function HomePage() {
         </Card>
       </Link>
 
-      {/* SAI Online Assessment (Prominent) */}
-      <Link to="/fitness-test" className="lg:col-span-3 group block">
-        <Card className="relative overflow-hidden p-6 sm:p-7 rounded-2xl shadow-2xl backdrop-blur-sm group-hover:scale-[1.01] transition-transform bg-gradient-to-r from-indigo-600/30 via-purple-600/25 to-pink-500/20 border border-white/10">
-          <div className="absolute -right-16 -top-16 h-64 w-64 rounded-full bg-indigo-500/20 blur-3xl"></div>
-          <div className="absolute -left-20 -bottom-20 h-72 w-72 rounded-full bg-pink-500/10 blur-3xl"></div>
-          <div className="relative flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-            <div>
-              <h3 className="text-2xl sm:text-3xl font-extrabold tracking-tight">SAI Online Assessment</h3>
-              <p className="text-gray-300 text-sm sm:text-base mt-2 max-w-2xl">Begin the Sports Authority of India assessment. Complete all tests in one session for best results.</p>
-            </div>
-            <div className="shrink-0">
-              <span className="inline-flex items-center gap-2 rounded-xl bg-white text-black px-4 py-2 text-sm sm:text-base font-semibold shadow">
-                Start Now
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
-              </span>
-            </div>
-          </div>
-        </Card>
-      </Link>
+      
 
       {/* Profile */}
       <Card className="p-6 bg-black/40 rounded-2xl shadow-2xl hover:scale-[1.01] transition-transform">
@@ -202,13 +204,15 @@ export default function HomePage() {
         </div>
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {fitnessSummary.data?.filter((s: any) => s.status !== 'completed').slice(0, 6).map((s: any) => (
-            <div key={s.testId} className="p-4 bg-gray-900/50 border border-gray-700 rounded-xl hover:shadow-lg transition flex flex-col justify-between">
-              <p className="font-medium mb-2">{s.testName}</p>
-              <div className="flex items-center justify-between">
-                <p className="text-xs text-gray-400 capitalize">{s.qualityTested || ''}</p>
-                <Badge variant="outline">{t('pending')}</Badge>
+            <Link to={`/normal-fitness-test/${s.testId}`} key={s.testId} className="block group">
+              <div className="p-4 bg-gray-900/50 border border-gray-700 rounded-xl hover:shadow-lg transition flex flex-col justify-between group-hover:bg-gray-900/60">
+                <p className="font-medium mb-2">{s.testName}</p>
+                <div className="flex items-center justify-between">
+                  <p className="text-xs text-gray-400 capitalize">{s.qualityTested || ''}</p>
+                  <Badge variant="outline">{t('pending')}</Badge>
+                </div>
               </div>
-            </div>
+            </Link>
           )) || <p className="text-sm text-gray-500">{t('noData')}</p>}
         </div>
       </Card>

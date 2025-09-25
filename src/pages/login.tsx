@@ -20,11 +20,8 @@ export default function LoginPage() {
     setError(null);
     setLoading(true);
     try {
-      if (isSignup) {
-        await signUp(email, password);
-      } else {
-        await signIn(email, password);
-      }
+      // Mocked auth: always use Google mock login for both login and signup actions
+      await signInWithGoogle();
       navigate("/");
     } catch (err: any) {
       setError(err?.message || (isSignup ? "Signup failed" : "Login failed"));
@@ -60,12 +57,7 @@ export default function LoginPage() {
               alt="Khel-Setu"
               className="h-12 w-auto"
             />
-            <h3 className="text-2xl font-bold text-white tracking-tight">
-              {isSignup ? "Create Account" : "Welcome Back"}
-            </h3>
-            <p className="text-sm text-gray-400">
-              {isSignup ? "Join our community today" : "Sign in to continue"}
-            </p>
+            <h3 className="text-2xl font-bold text-white tracking-tight">Khel Setu</h3>
           </div>
 
           <form onSubmit={onSubmit} className="space-y-4">
@@ -75,7 +67,6 @@ export default function LoginPage() {
               placeholder="you@example.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              required
             />
             <Input
               label="Password"
@@ -83,7 +74,6 @@ export default function LoginPage() {
               placeholder="••••••••"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              required
             />
 
             {error && (

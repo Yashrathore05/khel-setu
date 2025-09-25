@@ -50,7 +50,7 @@ export default function LeaderboardPage() {
                 <div className="flex items-end gap-3 flex-wrap">
                     <div className="flex flex-col text-xs text-gray-400">
                         <label className="mb-1">Gender</label>
-                        <select value={gender} onChange={(e) => setGender(e.target.value as any)} className="bg-black/40 border border-white/10 rounded-lg px-3 py-2 text-sm">
+                        <select value={gender} onChange={(e) => setGender(e.target.value as any)} className="bg-black/60 text-white border border-white/20 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-white/20">
                             <option value="">All</option>
                             <option value="Male">Male</option>
                             <option value="Female">Female</option>
@@ -59,7 +59,7 @@ export default function LeaderboardPage() {
                     </div>
                     <div className="flex flex-col text-xs text-gray-400">
                         <label className="mb-1">Level</label>
-                        <select value={level} onChange={(e) => setLevel(e.target.value as any)} className="bg-black/40 border border-white/10 rounded-lg px-3 py-2 text-sm">
+                        <select value={level} onChange={(e) => setLevel(e.target.value as any)} className="bg-black/60 text-white border border-white/20 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-white/20">
                             <option value="">All</option>
                             <option value="Beginner">Beginner</option>
                             <option value="Intermediate">Intermediate</option>
@@ -68,18 +68,18 @@ export default function LeaderboardPage() {
                     </div>
                     <div className="flex flex-col text-xs text-gray-400">
                         <label className="mb-1">Region</label>
-                        <input value={region} onChange={(e) => setRegion(e.target.value)} placeholder="e.g. Delhi" className="bg-black/40 border border-white/10 rounded-lg px-3 py-2 text-sm" />
+                        <input value={region} onChange={(e) => setRegion(e.target.value)} placeholder="e.g. Delhi" className="bg-black/60 text-white placeholder-gray-400 border border-white/20 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-white/20" />
                     </div>
                     <div className="flex items-end gap-2">
                         <div className="flex flex-col text-xs text-gray-400">
                             <label className="mb-1">Min Age</label>
-                            <input type="number" min={0} value={minAge} onChange={(e) => setMinAge(e.target.value)} className="w-24 bg-black/40 border border-white/10 rounded-lg px-3 py-2 text-sm" />
+                            <input type="number" min={0} value={minAge} onChange={(e) => setMinAge(e.target.value)} className="w-24 bg-black/60 text-white placeholder-gray-400 border border-white/20 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-white/20" />
                         </div>
                         <div className="flex flex-col text-xs text-gray-400">
                             <label className="mb-1">Max Age</label>
-                            <input type="number" min={0} value={maxAge} onChange={(e) => setMaxAge(e.target.value)} className="w-24 bg-black/40 border border-white/10 rounded-lg px-3 py-2 text-sm" />
+                            <input type="number" min={0} value={maxAge} onChange={(e) => setMaxAge(e.target.value)} className="w-24 bg-black/60 text-white placeholder-gray-400 border border-white/20 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-white/20" />
                         </div>
-                        <button onClick={() => refetch()} className="h-10 px-4 rounded-lg bg-white/10 hover:bg-white/20 text-sm">Apply</button>
+                        <button onClick={() => refetch()} className="h-10 px-4 rounded-lg bg-white/15 hover:bg-white/25 text-sm text-white">Apply</button>
                     </div>
                 </div>
             </div>

@@ -11,6 +11,7 @@ import NormalFitnessTestPage from './pages/normal-fitness-test';
 import NormalFitnessTestDetailPage from './pages/normal-fitness-test-detail';
 import AssessmentBreakPage from './pages/assessment-break';
 import EventsPage from './pages/events';
+import EventDetailPage from './pages/events-detail';
 import ProfilePage from './pages/profile';
 import LoginPage from './pages/login';
 import SignupPage from './pages/signup';
@@ -69,6 +70,7 @@ function AppInner() {
                         <Route path="/normal-fitness-test" element={<NormalFitnessTestPage />} />
                         <Route path="/normal-fitness-test/:id" element={<NormalFitnessTestDetailPage />} />
                         <Route path="/events" element={<ProtectedRoute><EventsPage /></ProtectedRoute>} />
+                        <Route path="/events/:id" element={<ProtectedRoute><EventDetailPage /></ProtectedRoute>} />
                         <Route path="/leaderboard" element={<ProtectedRoute><LeaderboardPage /></ProtectedRoute>} />
                         <Route path="/progress" element={<ProtectedRoute><ProgressPage /></ProtectedRoute>} />
                         <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />

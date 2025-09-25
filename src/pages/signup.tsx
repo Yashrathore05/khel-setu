@@ -4,19 +4,20 @@ import { useAuth } from '../contexts/AuthContext';
 import { Link, useNavigate } from 'react-router-dom';
 
 export default function SignupPage() {
-	const { signUp, signInWithGoogle } = useAuth();
+    const { signInWithGoogle } = useAuth();
 	const navigate = useNavigate();
 	const [email, setEmail] = useState('');
 	const [password, setPassword] = useState('');
 	const [error, setError] = useState<string | null>(null);
 	const [loading, setLoading] = useState(false);
 
-	async function onSubmit(e: FormEvent) {
+    async function onSubmit(e: FormEvent) {
 		e.preventDefault();
 		setError(null);
 		setLoading(true);
 		try {
-			await signUp(email, password);
+            // Mocked auth: route to the same mock account as Google login
+            await signInWithGoogle();
 			navigate('/');
 		} catch (err: any) {
 			setError(err?.message || 'Signup failed');
@@ -31,11 +32,11 @@ export default function SignupPage() {
 			<form onSubmit={onSubmit} className="space-y-3">
 				<label className="block">
 					<span className="block text-sm font-medium">Email</span>
-					<input value={email} onChange={(e) => setEmail(e.target.value)} type="email" required className="mt-1 w-full rounded border px-3 py-2" />
+                    <input value={email} onChange={(e) => setEmail(e.target.value)} type="email" className="mt-1 w-full rounded border px-3 py-2" />
 				</label>
 				<label className="block">
 					<span className="block text-sm font-medium">Password</span>
-					<input value={password} onChange={(e) => setPassword(e.target.value)} type="password" required className="mt-1 w-full rounded border px-3 py-2" />
+                    <input value={password} onChange={(e) => setPassword(e.target.value)} type="password" className="mt-1 w-full rounded border px-3 py-2" />
 				</label>
 				{error && <p className="text-sm text-red-600">{error}</p>}
 				<button disabled={loading} className="w-full rounded bg-black px-3 py-2 text-white disabled:opacity-50">{loading ? 'Creating...' : 'Create account'}</button>
