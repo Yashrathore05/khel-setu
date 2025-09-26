@@ -86,16 +86,114 @@ export default function FitnessTestDetailPage() {
 
     useEffect(() => {
         if (completed) return; // freeze message once completed
-        const idleMessages = [
-            'Be ready. Align yourself in the frame.',
-            'Ensure proper lighting for accurate tracking.',
-            'Keep the camera steady before you begin.',
+        // General guidance
+        const baseIdle = [
+            'Keep your device on a stable surface — tripod or solid table.',
+            'Only you should be in the frame. Ask others to stay out.',
+            'Stand far enough so your full body is visible head to toe.',
+            'Use good lighting from the front. Avoid strong backlight/shadows.',
+            'Clean the camera lens for a clear picture.',
+            'Preferred: landscape orientation. Keep phone still during tests.',
+            'Clear the background — remove mirrors/moving objects.',
+            'Ensure stable internet and battery above 20%.',
+            'Follow on-screen markers/lines. Calibrate when asked.',
+            'Read all instructions fully before starting.',
         ];
-        const activeMessages = [
-            'Great job! Maintain your form.',
-            'You are doing great. Keep going!',
-            'Stay focused. Smooth and steady.',
+        const baseActive = [
+            'Maintain form. Smooth, controlled movement — avoid sudden jerks.',
+            'Stay centered and fully inside the frame at all times.',
+            'Do not block joints with clothing or objects.',
+            'Look forward; avoid turning away from the camera.',
+            'If someone enters the frame, stop and retry the test.',
+            'Breathe steadily. Do not hold your breath.',
+            'Wait for the cue to start/stop cleanly.',
+            'If camera shakes, pause, stabilize, and resume.',
         ];
+
+        // Test-specific guidance
+        const perTest = {
+            pre: [] as string[],
+            during: [] as string[],
+        };
+        switch (id) {
+            case 'test1': // Height capture
+                perTest.pre.push(
+                    'Stand upright, feet flat. Heels near a wall if possible.',
+                    'Remove footwear and cap/hat. Keep head level, eyes forward.',
+                );
+                perTest.during.push(
+                    'Stand still for a clear measurement. Don’t lean or tiptoe.',
+                );
+                break;
+            case 'test3': // Sit and Reach
+                perTest.pre.push(
+                    'Sit with legs straight, feet against the box/mark.',
+                    'Warm up gently; avoid aggressive stretching.',
+                );
+                perTest.during.push(
+                    'Reach forward slowly without bouncing. Keep knees extended.',
+                );
+                break;
+            case 'test4': // Vertical jump
+                perTest.pre.push(
+                    'Stand still before jump. Use a safe, non-slippery surface.',
+                );
+                perTest.during.push(
+                    'Jump vertically and land safely. Stay within the frame.',
+                );
+                break;
+            case 'test5': // Broad jump
+                perTest.pre.push(
+                    'Start behind the line with both feet. Ensure clear landing space.',
+                );
+                perTest.during.push(
+                    'Two-foot takeoff and landing. Do not step back after landing.',
+                );
+                break;
+            case 'test6': // Medicine ball throw
+                perTest.pre.push(
+                    'Choose a safe open area. Keep others away from the throw path.',
+                );
+                perTest.during.push(
+                    'Throw from chest level (per rules). Keep feet stable if required.',
+                );
+                break;
+            case 'test7': // 30m sprint
+                perTest.pre.push(
+                    'Mark clear start and finish lines. Warm up adequately.',
+                );
+                perTest.during.push(
+                    'Start behind the line and sprint straight through the finish.',
+                );
+                break;
+            case 'test8': // Shuttle 4x10
+                perTest.pre.push(
+                    'Mark both lines clearly and clear the running lane.',
+                );
+                perTest.during.push(
+                    'Touch each line and change direction quickly but under control.',
+                );
+                break;
+            case 'test9': // Sit-ups
+                perTest.pre.push(
+                    'Lie on your back, knees bent, feet anchored if possible.',
+                );
+                perTest.during.push(
+                    'Do not pull your neck. Move smoothly; full up and down counts.',
+                );
+                break;
+            case 'test10': // Run laps
+                perTest.pre.push(
+                    'Use a safe loop. Hydrate and pace yourself.',
+                );
+                perTest.during.push(
+                    'Cross the mid-line each lap. Maintain steady pacing.',
+                );
+                break;
+        }
+
+        const idleMessages = [...baseIdle, ...perTest.pre];
+        const activeMessages = [...baseActive, ...perTest.during];
         const arr = recording ? activeMessages : idleMessages;
         let i = 0;
         setCoachMessage(arr[0]);
@@ -104,7 +202,7 @@ export default function FitnessTestDetailPage() {
             setCoachMessage(arr[i]);
         }, 5000);
         return () => window.clearInterval(t);
-    }, [recording, completed]);
+    }, [recording, completed, id]);
 
     useEffect(() => {
         return () => {

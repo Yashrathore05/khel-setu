@@ -5,7 +5,7 @@ export type ChatMessage = {
   content: string;
 };
 
-const GEMINI_ENDPOINT = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent';
+const GEMINI_ENDPOINT = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-8b:generateContent';
 
 const SYSTEM_PROMPT = `You are Khel Setu Coach, an AI assistant for a sports training platform.
 Tone: supportive, concise, actionable. Audience: athletes and sports aspirants across India (not limited to students).
@@ -29,20 +29,21 @@ function getApiKey(): string {
 export async function generateChat(messages: ChatMessage[]): Promise<string> {
   const apiKey = getApiKey();
 
-  // Convert to Gemini "contents" format
-  const contents = messages
+  // Convert to Gemini "contents" format and prepend system prompt as a user instruction
+  const userAndAssistantMessages = messages
     .filter((m) => m.role !== 'system')
     .map((m) => ({
       role: m.role === 'assistant' ? 'model' : 'user',
       parts: [{ text: m.content }],
     }));
 
+  const contents = [
+    { role: 'user', parts: [{ text: SYSTEM_PROMPT }] },
+    ...userAndAssistantMessages,
+  ];
+
   const body = {
     contents,
-    systemInstruction: {
-      role: 'system',
-      parts: [{ text: SYSTEM_PROMPT }],
-    },
     generationConfig: {
       temperature: 0.7,
       topP: 0.9,
