@@ -93,7 +93,7 @@ export default function AppLayout({ children }: PropsWithChildren) {
         <div className="mx-auto max-w-6xl px-3 sm:px-4 py-2.5 sm:py-3 flex items-center justify-between gap-2">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-3">
-            <img src="/images/logo.png" alt="Khel Setu" className="h-12 sm:h-14 w-12 sm:w-14 rounded-full object-cover border border-white/20 shadow-lg drop-shadow-[0_2px_10px_rgba(59,130,246,0.35)]" />
+            <img src="/images/logo.png" alt="Khel Setu" className="h-14 sm:h-16 md:h-20 w-14 sm:w-16 md:w-20 rounded-full object-contain bg-white border border-white/20 shadow-lg drop-shadow-[0_2px_10px_rgba(59,130,246,0.35)]" />
             <span className="text-lg sm:text-2xl font-extrabold tracking-wide">Khel Setu</span>
           </Link>
 

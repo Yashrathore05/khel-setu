@@ -55,7 +55,7 @@ export default function AssessmentPage() {
             return (
                 <div className="max-w-md mx-auto">
                     <Card className="p-6 text-center">
-                        <img src="/images/logo.png" alt="Khel-Setu" className="h-10 w-10 mx-auto mb-3" />
+                        <img src="/images/logo.png" alt="Khel-Setu" className="h-14 w-14 sm:h-16 sm:w-16 mx-auto mb-3 object-contain drop-shadow-[0_2px_10px_rgba(59,130,246,0.35)]" />
                         <h3 className="text-xl font-bold mb-1">SAI Assessment</h3>
                         <p className="text-sm text-gray-400 mb-6">Sign in or register to continue</p>
                         <div className="text-left grid gap-3 mb-4">
@@ -158,6 +158,9 @@ function MockAssessmentRegistration({ onComplete }: { onComplete: (creds: { user
     const [email, setEmail] = useState('');
     const [phone, setPhone] = useState('');
     const [parentsPhone, setParentsPhone] = useState('');
+    const [dob, setDob] = useState('');
+    const [, setPhotoFile] = useState<File | null>(null);
+    const [photoPreviewUrl, setPhotoPreviewUrl] = useState('');
     const [saving, setSaving] = useState(false);
 
     function generateCreds() {
@@ -182,12 +185,42 @@ function MockAssessmentRegistration({ onComplete }: { onComplete: (creds: { user
         <Card className="max-w-2xl mx-auto p-6">
             <h3 className="text-lg font-semibold mb-3">Assessment Registration </h3>
             <div className="grid gap-3 sm:grid-cols-2">
+                <div className="sm:col-span-2">
+                    <label className="block text-sm font-medium mb-1 text-gray-200">Profile Photo</label>
+                    <div className="flex items-center gap-3">
+                        <div className="h-16 w-16 rounded-full overflow-hidden bg-white/5 border border-white/10 flex items-center justify-center">
+                            {photoPreviewUrl ? (
+                                <img src={photoPreviewUrl} alt="Profile preview" className="h-full w-full object-cover" />
+                            ) : (
+                                <span className="text-xs text-gray-400">No photo</span>
+                            )}
+                        </div>
+                        <div>
+                            <input
+                                id="profile-photo"
+                                type="file"
+                                accept="image/*"
+                                onChange={(e) => {
+                                    const file = e.target.files && e.target.files[0];
+                                    if (file) {
+                                        setPhotoFile(file);
+                                        const url = URL.createObjectURL(file);
+                                        setPhotoPreviewUrl(url);
+                                    }
+                                }}
+                                className="block text-sm file:mr-3 file:rounded-lg file:border-0 file:bg-white/10 file:px-3 file:py-2 file:text-sm file:text-white hover:file:bg-white/20"
+                            />
+                            <p className="mt-1 text-xs text-gray-400">Upload a clear front-facing photo.</p>
+                        </div>
+                    </div>
+                </div>
                 <Input label="Full Name" value={name} onChange={(e) => setName(e.target.value)} />
                 <Input label="Father's Name" value={fathersName} onChange={(e) => setFathersName(e.target.value)} />
                 <Input label="Aadhar Card" value={aadharCard} onChange={(e) => setAadharCard(e.target.value)} />
                 <Input label="Address" value={address} onChange={(e) => setAddress(e.target.value)} />
                 <Input label="Height (cm)" value={height} onChange={(e) => setHeight(e.target.value)} />
                 <Input label="Weight (kg)" value={weight} onChange={(e) => setWeight(e.target.value)} />
+                <Input label="Date of Birth" type="date" value={dob} onChange={(e) => setDob(e.target.value)} />
                 <Input label="Email" value={email} onChange={(e) => setEmail(e.target.value)} />
                 <Input label="Phone" value={phone} onChange={(e) => setPhone(e.target.value)} />
                 <Input label="Parent's Phone" value={parentsPhone} onChange={(e) => setParentsPhone(e.target.value)} />

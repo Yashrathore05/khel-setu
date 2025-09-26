@@ -55,7 +55,7 @@ export default function LoginPage() {
             <img
               src="/images/logo.png"
               alt="Khel-Setu"
-              className="h-12 w-auto"
+              className="h-16 sm:h-20 md:h-24 w-auto drop-shadow-[0_2px_10px_rgba(59,130,246,0.35)]"
             />
             <h3 className="text-2xl font-bold text-white tracking-tight">Khel Setu</h3>
           </div>

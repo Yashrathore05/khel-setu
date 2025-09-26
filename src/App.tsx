@@ -43,8 +43,8 @@ function AppInner() {
                     <div className={`fixed inset-0 z-[100] flex items-center justify-center bg-gradient-to-b from-black via-black/95 to-black/90 ${fadeOut ? 'opacity-0' : 'opacity-100'} transition-opacity duration-300`}>
                         <div className="flex flex-col items-center gap-6">
                             <div className="relative">
-                                <div className="h-20 w-20 sm:h-24 sm:w-24 rounded-3xl bg-white/5 border border-white/15 backdrop-blur-sm flex items-center justify-center shadow-xl">
-                                    <img src="/images/logo.png" alt="Khel Setu logo" className="h-10 w-10 sm:h-12 sm:w-12 object-contain" />
+                                <div className="h-24 w-24 sm:h-28 sm:w-28 rounded-3xl bg-white/5 border border-white/15 backdrop-blur-sm flex items-center justify-center shadow-xl">
+                                    <img src="/images/logo.png" alt="Khel Setu logo" className="h-16 w-16 sm:h-20 sm:w-20 object-contain drop-shadow-[0_2px_10px_rgba(59,130,246,0.35)]" />
                                 </div>
                                 <div className="absolute inset-0 -z-10 animate-ping-slow rounded-3xl bg-blue-500/10"></div>
                             </div>

@@ -218,8 +218,8 @@ export default function FitnessTestDetailPage() {
 
     async function startCamera() {
         try {
-            const useRearCam = id === 'test3' || id === 'test4' || id === 'test5';
-            const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: useRearCam ? 'environment' : 'user' }, audio: false });
+            // Always use front camera for a consistent selfie view
+            const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' }, audio: false });
             streamRef.current = stream;
             if (videoRef.current) {
                 videoRef.current.srcObject = stream;
@@ -233,6 +233,8 @@ export default function FitnessTestDetailPage() {
                     }
                 });
                 await videoRef.current.play();
+                // Ensure natural selfie preview: mirror horizontally
+                videoRef.current.style.transform = 'scaleX(-1)';
             }
             // Load models lazily based on test
             if (id === 'test1' || id === 'test3' || id === 'test4' || id === 'test5' || id === 'test6' || id === 'test7' || id === 'test8' || id === 'test9' || id === 'test10') {
