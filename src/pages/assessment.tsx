@@ -192,7 +192,9 @@ function MockAssessmentRegistration({ onComplete }: { onComplete: (creds: { user
                 <Input label="Phone" value={phone} onChange={(e) => setPhone(e.target.value)} />
                 <Input label="Parent's Phone" value={parentsPhone} onChange={(e) => setParentsPhone(e.target.value)} />
             </div>
-            <Button onClick={submit} disabled={saving} className="mt-4">{saving ? 'Submitting...' : 'Submit & Show Login'}</Button>
+            <Button onClick={submit} disabled={saving} className="mt-4 w-full h-11 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-600">
+                {saving ? 'Submitting...' : 'Submit & Show Login'}
+            </Button>
             
         </Card>
     );
@@ -207,6 +209,54 @@ function AssessmentDisclaimer({ onAgree, onCancel }: { onAgree: () => void; onCa
                 <p className="text-sm text-gray-300">
                     When you enter the assessment, it must be completed in one session. If you leave or close it before completion, you will need to start again.
                 </p>
+                <div className="mt-4 text-sm text-gray-300 bg-white/5 border border-white/10 rounded-xl p-4">
+                    <div className="flex items-center gap-2 mb-3">
+                        <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-blue-500/20 text-blue-300 text-[11px]">i</span>
+                        <p className="font-medium text-gray-200">Please ensure</p>
+                    </div>
+                    <ul className="grid gap-2 sm:grid-cols-2">
+                        <li className="flex items-start gap-2">
+                            <span className="mt-0.5 text-green-400">✓</span>
+                            <span>Keep your device directly facing you on a stable surface (tripod/table).</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                            <span className="mt-0.5 text-green-400">✓</span>
+                            <span>Only you should be in the frame — ask others not to enter.</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                            <span className="mt-0.5 text-green-400">✓</span>
+                            <span>Stand far enough so your full body is visible from head to toe.</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                            <span className="mt-0.5 text-green-400">✓</span>
+                            <span>Use good front lighting; avoid strong backlight and shadows.</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                            <span className="mt-0.5 text-green-400">✓</span>
+                            <span>Clear the background and remove mirrors or moving objects.</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                            <span className="mt-0.5 text-green-400">✓</span>
+                            <span>Wear fitted/sports clothing so joints are clearly visible.</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                            <span className="mt-0.5 text-green-400">✓</span>
+                            <span>Ensure steady internet and battery above 20%; plug in if possible.</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                            <span className="mt-0.5 text-green-400">✓</span>
+                            <span>Silence notifications and minimize calls/interruptions.</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                            <span className="mt-0.5 text-green-400">✓</span>
+                            <span>Have enough space around you to move safely.</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                            <span className="mt-0.5 text-green-400">✓</span>
+                            <span>If anyone enters the frame or the camera shakes, pause and retry.</span>
+                        </li>
+                    </ul>
+                </div>
                 <div className="mt-5 grid grid-cols-2 gap-3">
                     <button onClick={onCancel} className="h-11 rounded-xl bg-white/10 hover:bg-white/20 text-white border border-white/10">Cancel</button>
                     <Button className="h-11 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-600" onClick={onAgree}>I Agree</Button>
