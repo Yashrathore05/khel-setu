@@ -5,6 +5,7 @@ import Skeleton from '../components/Skeleton';
 import TestProgressService from '../services/testProgressService';
 import { useAuth } from '../contexts/AuthContext';
 import { generateChat } from '../services/geminiService';
+import LeaderboardSection from '../components/LeaderboardSection';
 import { Link } from 'react-router-dom';
 
 export default function ProgressPage() {
@@ -155,6 +156,8 @@ export default function ProgressPage() {
                     </div>
                 )}
             </Card>
+
+            <LeaderboardSection limit={10} />
 
             <Card className="p-6 bg-black/40 rounded-2xl shadow-2xl overflow-x-auto">
                 <h3 className="text-lg font-semibold mb-3">Recent Results</h3>

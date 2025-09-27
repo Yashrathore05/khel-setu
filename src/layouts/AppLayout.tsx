@@ -114,9 +114,6 @@ export default function AppLayout({ children }: PropsWithChildren) {
             <NavLink to="/events" className={({ isActive }) => navClasses(isActive)}>
               Events
             </NavLink>
-            <NavLink to="/leaderboard" className={({ isActive }) => navClasses(isActive)}>
-              Leaderboard
-            </NavLink>
             <NavLink to="/profile" className={({ isActive }) => navClasses(isActive)}>
               Profile
             </NavLink>
