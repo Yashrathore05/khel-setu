@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { generateChat, type ChatMessage } from '../services/geminiService';
+import { generateChat, listAvailableModels, type ChatMessage } from '../services/geminiService';
 
 export default function ChatbotPage() {
     const [messages, setMessages] = useState<ChatMessage[]>([
@@ -13,6 +13,25 @@ export default function ChatbotPage() {
     useEffect(() => {
         scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' });
     }, [messages, loading]);
+
+    // Debug: List available models on component mount
+    useEffect(() => {
+        const debugModels = async () => {
+            try {
+                const models = await listAvailableModels();
+                console.log('🔍 Available Gemini Models:', models);
+                if (models?.models) {
+                    console.log('📋 Model List:');
+                    models.models.forEach((model: any) => {
+                        console.log(`- ${model.name} (${model.displayName || 'No display name'})`);
+                    });
+                }
+            } catch (e: any) {
+                console.error('❌ Error listing models:', e.message);
+            }
+        };
+        debugModels();
+    }, []);
 
     async function onSend() {
         const text = input.trim();

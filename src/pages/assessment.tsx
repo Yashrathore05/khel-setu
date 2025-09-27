@@ -9,8 +9,6 @@ import Input from '../components/Input';
 import Button from '../components/Button';
 
 const ALL_TESTS = [
-	{ testId: 'test1', testName: 'Height' },
-	{ testId: 'test2', testName: 'Weight' },
 	{ testId: 'test3', testName: 'Sit and Reach' },
 	{ testId: 'test4', testName: 'Standing Vertical Jump' },
 	{ testId: 'test5', testName: 'Standing Broad Jump' },
@@ -19,6 +17,8 @@ const ALL_TESTS = [
 	{ testId: 'test8', testName: '4 X 10 Mts Shuttle Run' },
 	{ testId: 'test9', testName: 'Sit Ups' },
 	{ testId: 'test10', testName: '800m / 1.6km Run' },
+	{ testId: 'test1', testName: 'Height' },
+	{ testId: 'test2', testName: 'Weight' },
 ];
 
 function StatusBadge({ status }: { status: string | undefined }) {
@@ -59,7 +59,7 @@ export default function AssessmentPage() {
                         <h3 className="text-xl font-bold mb-1">SAI Assessment</h3>
                         <p className="text-sm text-gray-400 mb-6">Sign in or register to continue</p>
                         <div className="text-left grid gap-3 mb-4">
-                            <Input label="Username" placeholder={generated?.username || 'e.g. sai_xxxxxx'} value={loginUsername} onChange={(e) => setLoginUsername(e.target.value)} />
+                            <Input label="User ID" placeholder={generated?.username || 'e.g. sai_xxxxxx'} value={loginUsername} onChange={(e) => setLoginUsername(e.target.value)} />
                             <Input label="Password" type="password" placeholder={generated?.password || '••••••••'} value={loginPassword} onChange={(e) => setLoginPassword(e.target.value)} />
                         </div>
                         <div className="grid gap-3">
@@ -122,7 +122,7 @@ export default function AssessmentPage() {
     return (
     	<>
 			<div className="mb-3 sm:mb-4">
-				<Link to="/fitness-test/test1" className="inline-block w-full sm:w-auto rounded-xl bg-gradient-to-r from-indigo-500 to-purple-600 px-4 py-2 text-center text-white">
+				<Link to="/fitness-test/test3" className="inline-block w-full sm:w-auto rounded-xl bg-gradient-to-r from-indigo-500 to-purple-600 px-4 py-2 text-center text-white">
 					Start Assessment
 				</Link>
 			</div>
@@ -186,7 +186,7 @@ function MockAssessmentRegistration({ onComplete }: { onComplete: (creds: { user
             <h3 className="text-lg font-semibold mb-3">Assessment Registration </h3>
             <div className="grid gap-3 sm:grid-cols-2">
                 <div className="sm:col-span-2">
-                    <label className="block text-sm font-medium mb-1 text-gray-200">Profile Photo</label>
+                    <label className="block text-sm font-medium mb-1 text-gray-200">Photo</label>
                     <div className="flex items-center gap-3">
                         <div className="h-16 w-16 rounded-full overflow-hidden bg-white/5 border border-white/10 flex items-center justify-center">
                             {photoPreviewUrl ? (
@@ -274,7 +274,7 @@ function AssessmentDisclaimer({ onAgree, onCancel }: { onAgree: () => void; onCa
                         </li>
                         <li className="flex items-start gap-2">
                             <span className="mt-0.5 text-green-400">✓</span>
-                            <span>Ensure steady internet and battery above 20%; plug in if possible.</span>
+                            <span>Ensure battery is above 20%; plug in if possible.</span>
                         </li>
                         <li className="flex items-start gap-2">
                             <span className="mt-0.5 text-green-400">✓</span>

@@ -5,7 +5,7 @@ export type ChatMessage = {
   content: string;
 };
 
-const GEMINI_ENDPOINT = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-8b:generateContent';
+const GEMINI_ENDPOINT = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
 
 const SYSTEM_PROMPT = `You are Khel Setu Coach, an AI assistant for a sports training platform.
 Tone: supportive, concise, actionable. Audience: athletes and sports aspirants across India (not limited to students).
@@ -24,6 +24,20 @@ function getApiKey(): string {
   const fromWindow = (globalThis as any)?.GEMINI_API_KEY as string | undefined;
   if (fromWindow && fromWindow.trim()) return fromWindow.trim();
   throw new Error('Missing VITE_GEMINI_API_KEY. Add it to your .env file.');
+}
+
+export async function listAvailableModels(): Promise<any> {
+  const apiKey = getApiKey();
+  const url = `https://generativelanguage.googleapis.com/v1beta/models?key=${encodeURIComponent(apiKey)}`;
+  
+  try {
+    const res = await fetch(url);
+    const data = await res.json();
+    return data;
+  } catch (error) {
+    console.error('Error listing models:', error);
+    throw error;
+  }
 }
 
 export async function generateChat(messages: ChatMessage[]): Promise<string> {
@@ -53,35 +67,66 @@ export async function generateChat(messages: ChatMessage[]): Promise<string> {
   } as const;
 
   const url = `${GEMINI_ENDPOINT}?key=${encodeURIComponent(apiKey)}`;
-  // Abort if Gemini takes too long
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 20000);
-  let res: Response;
-  try {
-    res = await fetch(url, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body),
-      signal: controller.signal,
-    });
-  } catch (err: any) {
-    clearTimeout(timeoutId);
-    if (err?.name === 'AbortError') {
-      throw new Error('Gemini request timed out. Please try again.');
+  
+  // Retry logic for temporary service issues
+  const maxRetries = 3;
+  let lastError: Error | null = null;
+  
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      // Abort if Gemini takes too long
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 20000);
+      
+      const res = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+        signal: controller.signal,
+      });
+      
+      clearTimeout(timeoutId);
+      
+      if (res.ok) {
+        const data = await res.json();
+        const text = data?.candidates?.[0]?.content?.parts?.[0]?.text || '';
+        return text.trim();
+      }
+      
+      // If it's a 503 (service unavailable) or 429 (rate limit), retry
+      if (res.status === 503 || res.status === 429) {
+        const errText = await res.text().catch(() => '');
+        lastError = new Error(`Gemini service temporarily unavailable (${res.status}): ${errText}`);
+        
+        if (attempt < maxRetries) {
+          // Wait before retrying (exponential backoff)
+          await new Promise(resolve => setTimeout(resolve, Math.pow(2, attempt) * 1000));
+          continue;
+        }
+      }
+      
+      // For other errors, don't retry
+      const errText = await res.text().catch(() => '');
+      throw new Error(`Gemini request failed (${res.status}): ${errText}`);
+      
+    } catch (err: any) {
+      if (err?.name === 'AbortError') {
+        throw new Error('Gemini request timed out. Please try again.');
+      }
+      
+      lastError = err;
+      
+      // If it's a network error and we have retries left, wait and retry
+      if (attempt < maxRetries && (err.message?.includes('fetch') || err.message?.includes('network'))) {
+        await new Promise(resolve => setTimeout(resolve, Math.pow(2, attempt) * 1000));
+        continue;
+      }
+      
+      throw err;
     }
-    throw err;
-  } finally {
-    clearTimeout(timeoutId);
   }
-
-  if (!res.ok) {
-    const errText = await res.text().catch(() => '');
-    throw new Error(`Gemini request failed (${res.status}): ${errText}`);
-  }
-
-  const data = await res.json();
-  const text = data?.candidates?.[0]?.content?.parts?.[0]?.text || '';
-  return text.trim();
+  
+  throw lastError || new Error('Failed to connect to Gemini after multiple attempts');
 }
 
 

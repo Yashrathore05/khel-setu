@@ -75,12 +75,12 @@ export default function FitnessTestDetailPage() {
 	const [t10Secs, setT10Secs] = useState<number | null>(null);
 	const unit = TEST_UNITS[id || 'test1'] || '';
 
-    const TEST_ORDER = ['test1','test2','test3','test4','test5','test6','test7','test8','test9','test10'];
+    const TEST_ORDER = ['test3','test4','test5','test6','test7','test8','test9','test10','test1','test2'];
     function getNextNavigationTarget(currentId: string): string {
         const idx = TEST_ORDER.indexOf(currentId);
         if (idx === -1 || idx === TEST_ORDER.length - 1) return '/fitness-test';
         const nextId = TEST_ORDER[idx + 1];
-        if (currentId === 'test3') return `/fitness-test-break/${nextId}`;
+        if (currentId === 'test5') return `/fitness-test-break/${nextId}`;
         return `/fitness-test/${nextId}`;
     }
 
