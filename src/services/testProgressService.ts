@@ -94,6 +94,7 @@ class TestProgressService {
         }
         const progress = await this.getTestProgress(userId);
 		const allTests = [
+			{ testId: 'test9', testName: 'Sit Ups', qualityTested: 'Core Strength' },
 			{ testId: 'test1', testName: 'Height', qualityTested: '' },
 			{ testId: 'test2', testName: 'Weight', qualityTested: '' },
 			{ testId: 'test3', testName: 'Sit and Reach', qualityTested: 'Flexibility' },
@@ -102,7 +103,6 @@ class TestProgressService {
 			{ testId: 'test6', testName: 'Medicine Ball Throw', qualityTested: 'Upper Body Strength' },
 			{ testId: 'test7', testName: '30mts Standing Start', qualityTested: 'Speed' },
 			{ testId: 'test8', testName: '4 X 10 Mts Shuttle Run', qualityTested: 'Agility' },
-			{ testId: 'test9', testName: 'Sit Ups', qualityTested: 'Core Strength' },
 			{ testId: 'test10', testName: '800m / 1.6km Run', qualityTested: 'Endurance' },
 		];
 		return allTests.map(test => {

@@ -9,13 +9,13 @@ import Input from '../components/Input';
 import Button from '../components/Button';
 
 const ALL_TESTS = [
+	{ testId: 'test9', testName: 'Sit Ups' },
 	{ testId: 'test3', testName: 'Sit and Reach' },
 	{ testId: 'test4', testName: 'Standing Vertical Jump' },
 	{ testId: 'test5', testName: 'Standing Broad Jump' },
 	{ testId: 'test6', testName: 'Medicine Ball Throw' },
 	{ testId: 'test7', testName: '30mts Standing Start' },
 	{ testId: 'test8', testName: '4 X 10 Mts Shuttle Run' },
-	{ testId: 'test9', testName: 'Sit Ups' },
 	{ testId: 'test10', testName: '800m / 1.6km Run' },
 	{ testId: 'test1', testName: 'Height' },
 	{ testId: 'test2', testName: 'Weight' },
@@ -122,7 +122,7 @@ export default function AssessmentPage() {
     return (
     	<>
 			<div className="mb-3 sm:mb-4">
-				<Link to="/fitness-test/test3" className="inline-block w-full sm:w-auto rounded-xl bg-gradient-to-r from-indigo-500 to-purple-600 px-4 py-2 text-center text-white">
+				<Link to="/fitness-test/test9" className="inline-block w-full sm:w-auto rounded-xl bg-gradient-to-r from-indigo-500 to-purple-600 px-4 py-2 text-center text-white">
 					Start Assessment
 				</Link>
 			</div>

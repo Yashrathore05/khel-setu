@@ -6,6 +6,7 @@ import Card from '../components/Card';
 import Skeleton from '../components/Skeleton';
 
 const ALL_TESTS = [
+    { testId: 'test9', testName: 'Sit Ups' },
     { testId: 'test1', testName: 'Height' },
     { testId: 'test2', testName: 'Weight' },
     { testId: 'test3', testName: 'Sit and Reach' },
@@ -14,7 +15,6 @@ const ALL_TESTS = [
     { testId: 'test6', testName: 'Medicine Ball Throw' },
     { testId: 'test7', testName: '30mts Standing Start' },
     { testId: 'test8', testName: '4 X 10 Mts Shuttle Run' },
-    { testId: 'test9', testName: 'Sit Ups' },
     { testId: 'test10', testName: '800m / 1.6km Run' },
 ];
 
